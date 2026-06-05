@@ -185,7 +185,7 @@ public class MainMenu extends Scene implements Ui {
                     @Override
                     public void call(Void data) {}
                 });
-                Quarry.Q.prefs.putBoolean("german", !de.isChecked()).flush();
+                Quarry.Q.prefs.putBoolean("chinese", !de.isChecked()).flush();
             }
         });
 
