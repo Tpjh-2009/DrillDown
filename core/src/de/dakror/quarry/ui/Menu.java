@@ -336,7 +336,7 @@ public class Menu {
                             if (data == null)
                                 continue;
                             Texture t = Game.G.getThumbnail(n);
-                            Image i = null;
+                            Image i;
                             if (t == null) {
                                 i = new Image(skin.getDrawable("thumb"));
                             } else {
