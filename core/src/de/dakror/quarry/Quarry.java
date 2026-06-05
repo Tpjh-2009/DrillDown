@@ -213,7 +213,7 @@ public class Quarry extends GameBase implements PlatformInterface {
 
         System.out.println("Game init took " + (System.currentTimeMillis() - t) + " ms");
 
-        // init fbos
+        // 初始化FBOS
         chunkFBOs = new FrameBuffer[(Const.DEFAULT_LAYER_SIZE / Const.CHUNK_SIZE)
                 * (Const.DEFAULT_LAYER_SIZE / Const.CHUNK_SIZE)];
 
