@@ -297,17 +297,12 @@ public class Menu {
                                 Game.G.ui.toast.show(Quarry.Q.i18n.get("toast.loading_game"));
                                 Game.G.ui.pauseButton.setChecked(true);
                                 Game.G.setPaused(true);
-                                Quarry.Q.threadPool.execute(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        Game.G.load(n, new Callback<Object>() {
-                                            @Override
-                                            public void call(Object data) {
-                                                modalOverlay.addAction(
-                                                        sequence(alpha(0, 0.25f, Interpolation.fade), visible(false)));
-                                                if (data instanceof Boolean && (Boolean) data == true) {
-                                                    Game.G.ui.pauseButton.setChecked(true);
-                                                    Game.G.setPaused(true);
+                                Quarry.Q.threadPool.execute(() -> Game.G.load(n, data -> {
+                                    modalOverlay.addAction(
+                                            sequence(alpha(0, 0.25f, Interpolation.fade), visible(false)));
+                                    if (data instanceof Boolean && (Boolean) data) {
+                                        Game.G.ui.pauseButton.setChecked(true);
+                                        Game.G.setPaused(true);
 
                                                     stage.unfocusAll();
                                                     Game.G.resetActiveStructure();
