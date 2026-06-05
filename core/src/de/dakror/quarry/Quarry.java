@@ -248,7 +248,7 @@ public class Quarry extends GameBase implements PlatformInterface {
         if (hasFilePerm()) {
             FileHandle local = Gdx.files.local(text);
 
-            // 如果文件夹创建失败，就用内部设置
+            // 如果文件夹创建失败，就用内部存储
             FileHandle fh = Gdx.files.external("TheQuarry/saves");
             fh.mkdirs();
             if (!fh.exists()) {
