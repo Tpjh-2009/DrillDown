@@ -304,11 +304,11 @@ public class Menu {
                                         Game.G.ui.pauseButton.setChecked(true);
                                         Game.G.setPaused(true);
 
-                                                    stage.unfocusAll();
-                                                    Game.G.resetActiveStructure();
-                                                    Game.G.ui.hideTooltip();
-                                                    Game.G.ui.destroyButton.setChecked(false);
-                                                    Game.G.ui.hideBuildMenu();
+                                        stage.unfocusAll();
+                                        Game.G.resetActiveStructure();
+                                        Game.G.ui.hideTooltip();
+                                        Game.G.ui.destroyButton.setChecked(false);
+                                        Game.G.ui.hideBuildMenu();
 
                                         load.setChecked(false);
                                         menuButton.setChecked(false);
