@@ -156,7 +156,7 @@ public class Quarry extends GameBase implements PlatformInterface {
 
     @Override
     public void pause() {
-        // wait for saving to complete until pause is allowed
+        // 等待保存完成，直到允许暂停
         try {
             threadPool.shutdown();
             threadPool.awaitTermination(10, TimeUnit.SECONDS);
