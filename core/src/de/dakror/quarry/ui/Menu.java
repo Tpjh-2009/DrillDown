@@ -315,19 +315,16 @@ public class Menu {
                                                     Game.G.ui.destroyButton.setChecked(false);
                                                     Game.G.ui.hideBuildMenu();
 
-                                                    load.setChecked(false);
-                                                    menuButton.setChecked(false);
-                                                    Game.G.ui.toast.show(Quarry.Q.i18n.get("toast.game_loaded"));
-                                                } else if (data instanceof Boolean && (Boolean) data == false) {
-                                                    Game.G.ui.toast.show(Quarry.Q.i18n.get("toast.game_not_loaded"));
-                                                } else if (data instanceof Exception) {
-                                                    Quarry.Q.pi.message(PlatformInterface.MSG_EXCEPTION, data);
-                                                    Game.G.ui.toast.show(Quarry.Q.i18n.get("toast.game_not_loaded"));
-                                                }
-                                            }
-                                        });
+                                        load.setChecked(false);
+                                        menuButton.setChecked(false);
+                                        Game.G.ui.toast.show(Quarry.Q.i18n.get("toast.game_loaded"));
+                                    } else if (data instanceof Boolean && !((Boolean) data)) {
+                                        Game.G.ui.toast.show(Quarry.Q.i18n.get("toast.game_not_loaded"));
+                                    } else if (data instanceof Exception) {
+                                        Quarry.Q.pi.message(PlatformInterface.MSG_EXCEPTION, data);
+                                        Game.G.ui.toast.show(Quarry.Q.i18n.get("toast.game_not_loaded"));
                                     }
-                                });
+                                }));
                             }
 
                             @Override
