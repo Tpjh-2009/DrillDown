@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2018 Maximilian Stark | Dakror <mail@dakror.de>
- * 
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ * <p>
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -149,44 +149,33 @@ public class Menu {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 Quarry.Q.sound.play(Quarry.Q.clickSfx);
-                final Callback<Void> cb = new Callback<Void>() {
-                    @Override
-                    public void call(Void data1) {
-                        Game.G.ui.seedPrompt.show(Game.G.ui, Quarry.Q.i18n.get("prompt.seed"),
-                                Long.toString((long) (Math.random() * Long.MAX_VALUE)),
-                                new Response<String, Boolean>() {
-                                    @Override
-                                    public Boolean call(String data) {
-                                        if (data != null) {
-                                            long seed = 0;
-                                            try {
-                                                seed = Long.parseLong(data.trim());
-                                            } catch (NumberFormatException e) {
-                                                seed = Util.hash(data);
-                                            }
-                                            Generator.G.setSeed(seed);
+                final Callback<Void> cb = data1 -> Game.G.ui.seedPrompt.show(Game.G.ui, Quarry.Q.i18n.get("prompt.seed"),
+                        Long.toString((long) (Math.random() * Long.MAX_VALUE)),
+                        data -> {
+                            if (data != null) {
+                                long seed;
+                                try {
+                                    seed = Long.parseLong(data.trim());
+                                } catch (NumberFormatException e) {
+                                    seed = Util.hash(data);
+                                }
+                                Generator.G.setSeed(seed);
 
-                                            Game.G.startNewGame();
-                                            menuButton.setChecked(false);
-                                            newGame.setChecked(false);
-                                        }
-                                        return true;
-                                    }
-                                });
-                    }
-                };
-                Game.G.ui.confirm.show(Game.G.ui, Quarry.Q.i18n.get("confirm.save_game"), new Callback<Boolean>() {
-                    @Override
-                    public void call(Boolean data) {
-                        if (data != null) {
-                            if (data == true) {
-                                save(cb);
-                            } else {
-                                cb.call(null);
+                                Game.G.startNewGame();
+                                menuButton.setChecked(false);
+                                newGame.setChecked(false);
                             }
+                            return true;
+                        });
+                Game.G.ui.confirm.show(Game.G.ui, Quarry.Q.i18n.get("confirm.save_game"), data -> {
+                    if (data != null) {
+                        if (data) {
+                            save(cb);
+                        } else {
+                            cb.call(null);
                         }
-                        newGame.setChecked(false);
                     }
+                    newGame.setChecked(false);
                 });
             }
         });
@@ -212,13 +201,10 @@ public class Menu {
 
                 save.setChecked(false);
                 load.setChecked(false);
-                saveAs(new Callback<String>() {
-                    @Override
-                    public void call(String data) {
-                        if (!p) {
-                            Game.G.ui.pauseButton.setChecked(false);
-                            Game.G.setPaused(false);
-                        }
+                saveAs(data -> {
+                    if (!p) {
+                        Game.G.ui.pauseButton.setChecked(false);
+                        Game.G.setPaused(false);
                     }
                 });
             }
@@ -240,13 +226,10 @@ public class Menu {
                     menuSavesContainer.clear();
 
                     FileHandle[] list = Quarry.Q.listFiles();
-                    Arrays.sort(list, new Comparator<FileHandle>() {
-                        @Override
-                        public int compare(FileHandle o1, FileHandle o2) {
-                            long y = o1.lastModified();
-                            long x = o2.lastModified();
-                            return (x < y) ? -1 : ((x == y) ? 0 : 1);
-                        }
+                    Arrays.sort(list, (o1, o2) -> {
+                        long y = o1.lastModified();
+                        long x = o2.lastModified();
+                        return Long.compare(x, y);
                     });
 
                     for (FileHandle fh : list) {
@@ -259,18 +242,15 @@ public class Menu {
                             public void clicked(InputEvent event, float x, float y) {
                                 Quarry.Q.sound.play(Quarry.Q.clickSfx);
                                 Game.G.ui.confirm.show(Game.G.ui, Quarry.Q.i18n.format("confirm.delete_save", n),
-                                        new Callback<Boolean>() {
-                                            @Override
-                                            public void call(Boolean data) {
-                                                if (data != null && data) {
-                                                    if (Quarry.Q.file("TheQuarry/saves/" + n + ".qsf", false)
-                                                            .delete()) {
-                                                        Game.G.ui.toast.show(Quarry.Q.i18n.get("toast.save_deleted"));
-                                                        menuSavesContainer.removeActor(entry);
-                                                    } else {
-                                                        Game.G.ui.toast
-                                                                .show(Quarry.Q.i18n.get("toast.save_not_deleted"));
-                                                    }
+                                        data -> {
+                                            if (data != null && data) {
+                                                if (Quarry.Q.file("TheQuarry/saves/" + n + ".qsf", false)
+                                                        .delete()) {
+                                                    Game.G.ui.toast.show(Quarry.Q.i18n.get("toast.save_deleted"));
+                                                    menuSavesContainer.removeActor(entry);
+                                                } else {
+                                                    Game.G.ui.toast
+                                                            .show(Quarry.Q.i18n.get("toast.save_not_deleted"));
                                                 }
                                             }
                                         });
@@ -387,26 +367,20 @@ public class Menu {
             public void clicked(InputEvent event, float x, float y) {
                 Quarry.Q.sound.play(Quarry.Q.clickSfx);
                 menu.setChecked(false);
-                Game.G.ui.confirm.show(Game.G.ui, Quarry.Q.i18n.get("confirm.save_game"), new Callback<Boolean>() {
-                    @Override
-                    public void call(Boolean data) {
-                        if (data != null) {
-                            if (data == true) {
-                                save(new Callback<Void>() {
-                                    @Override
-                                    public void call(Void data1) {
-                                        menuButton.setChecked(false);
-                                        Game.G.reset();
-                                        Quarry.Q.addScene(MainMenu.M);
-                                        Quarry.Q.dropScene(Game.G);
-                                    }
-                                });
-                            } else {
+                Game.G.ui.confirm.show(Game.G.ui, Quarry.Q.i18n.get("confirm.save_game"), data -> {
+                    if (data != null) {
+                        if (data) {
+                            save(data1 -> {
                                 menuButton.setChecked(false);
                                 Game.G.reset();
                                 Quarry.Q.addScene(MainMenu.M);
                                 Quarry.Q.dropScene(Game.G);
-                            }
+                            });
+                        } else {
+                            menuButton.setChecked(false);
+                            Game.G.reset();
+                            Quarry.Q.addScene(MainMenu.M);
+                            Quarry.Q.dropScene(Game.G);
                         }
                     }
                 });
@@ -419,10 +393,7 @@ public class Menu {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 Quarry.Q.sound.play(Quarry.Q.clickSfx);
-                Game.G.ui.alert.show(Game.G.ui, Quarry.Q.i18n.get("alert.language_change"), new Callback<Void>() {
-                    @Override
-                    public void call(Void data) {
-                    }
+                Game.G.ui.alert.show(Game.G.ui, Quarry.Q.i18n.get("alert.language_change"), data -> {
                 });
                 Quarry.Q.prefs.putBoolean("chinese", !de.isChecked()).flush();
             }
@@ -495,18 +466,15 @@ public class Menu {
         load.setChecked(false);
         saveAs.setChecked(false);
         if (Game.G.currentGameName == null) {
-            saveAs(new Callback<String>() {
-                @Override
-                public void call(String data) {
-                    Game.G.currentGameName = data;
-                    save.setChecked(false);
-                    if (!p) {
-                        Game.G.setPaused(false);
-                        Game.G.ui.pauseButton.setChecked(false);
-                    }
-                    if (o != null)
-                        o.call(null);
+            saveAs(data -> {
+                Game.G.currentGameName = data;
+                save.setChecked(false);
+                if (!p) {
+                    Game.G.setPaused(false);
+                    Game.G.ui.pauseButton.setChecked(false);
                 }
+                if (o != null)
+                    o.call(null);
             });
         } else {
             Game.G.save(o);
@@ -519,44 +487,28 @@ public class Menu {
     }
 
     public void saveAs(final Callback<String> o) {
-        Game.G.ui.prompt.show(Game.G.ui, Quarry.Q.i18n.get("prompt.save_name"), null, new Response<String, Boolean>() {
-            @Override
-            public Boolean call(final String data) {
-                if (data != null) {
-                    if (Game.G.saveExists(data)) {
-                        Game.G.ui.confirm.show(Game.G.ui, Quarry.Q.i18n.get("confirm.save_exists"),
-                                new Callback<Boolean>() {
-                                    @Override
-                                    public void call(Boolean d) {
-                                        if (d != null && d) {
-                                            save.setChecked(false);
-                                            saveAs.setChecked(false);
-                                            Game.G.save(data, true, new Callback<Void>() {
-                                                @Override
-                                                public void call(Void x) {
-                                                    o.call(data);
-                                                }
-                                            });
-                                            Game.G.ui.hide(Game.G.ui.prompt);
-                                        }
-                                    }
-                                });
-                        return false;
-                    } else {
-                        save.setChecked(false);
-                        saveAs.setChecked(false);
-                        Game.G.save(data, true, new Callback<Void>() {
-                            @Override
-                            public void call(Void x) {
-                                o.call(data);
-                            }
-                        });
-                    }
+        Game.G.ui.prompt.show(Game.G.ui, Quarry.Q.i18n.get("prompt.save_name"), null, data -> {
+            if (data != null) {
+                if (Game.G.saveExists(data)) {
+                    Game.G.ui.confirm.show(Game.G.ui, Quarry.Q.i18n.get("confirm.save_exists"),
+                            d -> {
+                                if (d != null && d) {
+                                    save.setChecked(false);
+                                    saveAs.setChecked(false);
+                                    Game.G.save(data, true, x -> o.call(data));
+                                    Game.G.ui.hide(Game.G.ui.prompt);
+                                }
+                            });
+                    return false;
+                } else {
+                    save.setChecked(false);
+                    saveAs.setChecked(false);
+                    Game.G.save(data, true, x -> o.call(data));
                 }
-                save.setChecked(false);
-                saveAs.setChecked(false);
-                return true;
             }
+            save.setChecked(false);
+            saveAs.setChecked(false);
+            return true;
         });
     }
 }
