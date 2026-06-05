@@ -133,7 +133,7 @@ public class Quarry extends GameBase implements PlatformInterface {
         i18n = new I18NBundleDelegate(I18NBundle.createBundle(Gdx.files.internal("i18n/TheQuarry"),
                 prefs.getBoolean("chinese", false) ? Locale.CHINESE : Locale.ENGLISH));
 
-        // backwards compat
+        // 向后兼容
         try {
             prefs.getFloat("sound", 1f);
         } catch (Exception e) {
