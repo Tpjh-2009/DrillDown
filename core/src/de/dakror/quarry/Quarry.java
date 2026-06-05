@@ -284,11 +284,8 @@ public class Quarry extends GameBase implements PlatformInterface {
 
     @Override
     public Object message(int messageCode, Object payload) {
-        switch (messageCode) {
-            case Const.MSG_FILE_PERMISSION: {
-                filePermissionState = (Boolean) payload ? 1 : 0;
-                break;
-            }
+        if (messageCode == Const.MSG_FILE_PERMISSION) {
+            filePermissionState = (Boolean) payload ? 1 : 0;
         }
 
         return null;
