@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2018 Maximilian Stark | Dakror <mail@dakror.de>
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,8 +23,10 @@ import com.badlogic.gdx.assets.loaders.SkinLoader.SkinParameter;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.PixmapPacker;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
@@ -74,7 +76,7 @@ public class LoadingScreen extends Scene {
 
         assets.load("tex.atlas", TextureAtlas.class);
 
-        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("Roboto-Medium.ttf"));
+        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("Mixed.ttf"));
         ObjectMap<String, Object> fontMap = new ObjectMap<String, Object>();
         fontMap.put("small-font", createFont(generator, 24));
         fontMap.put("default-font", createFont(generator, 32));
@@ -89,11 +91,11 @@ public class LoadingScreen extends Scene {
 
 
         Quarry.Q.skin = assets.get("skin.json");
-        Quarry.Q.font = Quarry.Q.skin.getFont("default-font");
-
-        Quarry.Q.font.getData().markupEnabled = true;
-        Quarry.Q.font.setFixedWidthGlyphs("0123456789-+");
-        Quarry.Q.skin.getFont("small-font").setFixedWidthGlyphs("0123456789");
+//        Quarry.Q.font = Quarry.Q.skin.getFont("default-font");
+//
+//        Quarry.Q.font.getData().markupEnabled = true;
+//        Quarry.Q.font.setFixedWidthGlyphs("0123456789-+");
+//        Quarry.Q.skin.getFont("small-font").setFixedWidthGlyphs("0123456789");
 
         progress = Quarry.Q.atlas.findRegion("structure_conveyor_we");
         bg = Quarry.Q.atlas.findRegion("button");
@@ -175,26 +177,9 @@ public class LoadingScreen extends Scene {
         param.minFilter = TextureFilter.Linear;
         param.size = (int) (dp * (float) Quarry.Q.pi.message(Const.MSG_DPI, null));
 
-        // 基础拉丁字符
-        StringBuilder sb = new StringBuilder();
-        sb.append("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-+!@#$%^&*()_=[]{};:'/\",.<>?\\|`~");
-//        // 添加基本汉字范围 (U+4E00 到 U+9FA5)
-//        for (char c = '\u4e00'; c <= '\u9fa5'; c++) {
-//            sb.append(c);
-//        }
-        sb.append("一上下不与且世业东丝两个中串为主么之乏买了事于互五井些交产享亮人什仅从仓仔他以们件价任伐优会传但位低体何余作你使供依侧便保倒值" +
-                "停储像允元充先光入全六共其具养内再写冲况冶冷净准凝几出击分切创初删利到制剂前剩剪割力功加动助势勤匀包化匠区千升单卡即却卸厂压原去叉" +
-                "及双反发取受变叠口另只可台右叶合同名后向吗否含启呀告周命和品哎商喜器回围固图圆土在地场均块坚坩型垛埃埋城埚域培基堆塑塔填增壮声壳处" +
-                "备复外多够大天太失头夹奇套好如始子字存学它完定宝实室容密察寸对导封将小少尘就尺尽层屏属岩峰巅工左巨己已布希带常幕平并库应底店度建开" +
-                "弄式引张弧弯强当录形彼往征待很得循心必志快态思性总恢恭息您情意感慎慢戏成我或户所手才打托扩扭技把折护报抽拆拉拒拖择拽持指按挖换据掘" +
-                "接控推描提摆摘撤支收改放效教数整文斗料断新方施旋无时是显普晶暂曲更最有望木未本术机杂杆材束条来板极构果架某查柱标栋树样核根格档桥桶" +
-                "梯械棒植模次欢止正此步段每比气水永求汇池汽沙没沸油沿泄法泡泥注泵洒洗活流浆浸消涡润液深混温游源滑滚满滤漂漏演激灌火炉炭炸点炼烧热焊" +
-                "焦然煤熔燃爆片版物特状独率玩环现玻珠球理璃生用由电界的盐盖盘目直相看真着知矩石矿码砍砖础硅硫硬确碎碳磁磨磺示离种科秒称移稀程稳空窑" +
-                "立竖端第等筑筒筛简算管箱类粉粗粘精纤级纯纸线组细终经结绕绘绝继续维绿缆缓编缩缺罐网置考者而耐耗联聚胜能脉脚自至致航良色节芯英药获菜" +
-                "萃蒸蓝藏虑融行表被装裹西要覆见观规视角解言计让许论设访识试该语误请诸读调谢谨败质购贴资起超越足车轨转轮软轴载较辅辊输边达过迎运近返" +
-                "还这进远连述退送适选通速造道邻部都配采里重野量金钛钢钮钻铁铅铜银铸链销锁错锚锡锭键锯长门问间阀防阳阵附降限除陶随隧集需青非面音顶项" +
-                "须预题颜馈馏首验骤高黄黑，。（）“”！？");
-        param.characters = sb.toString();
+        param.characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ";
+        param.characters += "一上下不与且世业东丝两个中串为主么之乏买了事于互五井些交产享亮人什仅从仓仔他以们件价任伐优会传但位低体何余作你使供依侧便保倒值停储像允元充先光入全六共其具养内再写冲况冶冷净准凝几出击分切创初删利到制剂前剩剪割力功加动助势勤匀包化匠区千升单卡即却卸厂压原去叉及双反发取受变叠口另只可台右叶合同名后向吗否含启呀告周命和品哎商喜器回围固图圆土在地场均块坚坩型垛埃埋城埚域培基堆塑塔填增壮声壳处备复外多够大天太失头夹奇套好如始子字存学它完定宝实室容密察寸对导封将小少尘就尺尽层屏属岩峰巅工左巨己已布希带常幕平并库应底店度建开弄式引张弧弯强当录形彼往征待很得循心必志快态思性总恢恭息您情意感慎慢戏成我或户所手才打托扩扭技把折护报抽拆拉拒拖择拽持指按挖换据掘接控推描提摆摘撤支收改放效教数整文斗料断新方施旋无时是显普晶暂曲更最有望木未本术机杂杆材束条来板极构果架某查柱标栋树样核根格档桥桶梯械棒植模次欢止正此步段每比气水永求汇池汽沙没沸油沿泄法泡泥注泵洒洗活流浆浸消涡润液深混温游源滑滚满滤漂漏演激灌火炉炭炸点炼烧热焊焦然煤熔燃爆片版物特状独率玩环现玻珠球理璃生用由电界的盐盖盘目直相看真着知矩石矿码砍砖础硅硫硬确碎碳磁磨磺示离种科秒称移稀程稳空窑立竖端第等筑筒筛简算管箱类粉粗粘精纤级纯纸线组细终经结绕绘绝继续维绿缆缓编缩缺罐网置考者而耐耗联聚胜能脉脚自至致航良色节芯英药获菜萃蒸蓝藏虑融行表被装裹西要覆见观规视角解言计让许论设访识试该语误请诸读调谢谨败质购贴资起超越足车轨转轮软轴载较辅辊输边达过迎运近返还这进远连述退送适选通速造道邻部都配采里重野量金钛钢钮钻铁铅铜银铸链销锁错锚锡锭键锯长门问间阀防阳阵附降限除陶随隧集需青非面音顶项须预题颜馈馏首验骤高黄黑";
+        param.characters += "，。（）“”‘’！？：；《》…—·～午";
 
         BitmapFont font = gen.generateFont(param);
         font.getData().markupEnabled = true;
@@ -219,7 +204,7 @@ public class LoadingScreen extends Scene {
                 interp = 0;
             } else {
                 visualProg = oldVisualProg + (prog - oldVisualProg) * interp;
-                interp += deltaTime / 0.1f;
+                interp += (float) (deltaTime / 0.1f);
             }
         }
 
