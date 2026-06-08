@@ -1,9 +1,13 @@
 apply plugin: "java"
 java.targetCompatibility = JavaVersion.VERSION_1_8
 
-sourceCompatibility = 1.8
-sourceSets.main.java.srcDirs = [ "src/" ]
-sourceSets.main.resources.srcDirs = [ project(":android").file("assets") ]
+java {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+}
+
+sourceSets.main.java.srcDirs = ["src/"]
+sourceSets.main.resources.srcDirs = [project(":android").file("assets")]
 
 project.ext.mainClassName = "de.dakror.quarry.desktop.DesktopLauncher"
 project.ext.assetsDir = new File("../android/assets")
