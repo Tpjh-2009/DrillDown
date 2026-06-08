@@ -88,11 +88,12 @@ project(":core") {
 
         annotationProcessor project(':commons:annotations')
     }
-    tasks.withType(JavaCompile) {
-		delete "$projectDir/gen"
-        mkdir "$projectDir/gen"
-        options.compilerArgs = ['-processor', 'de.dakror.annotations.LmlTagProcessor', '-s', "$projectDir/gen"]
-   //	    options.annotationProcessorGeneratedSourcesDirectory = "$projectDir/gen"
+    tasks.withType(JavaCompile).tap {
+        configureEach {
+            delete "$projectDir/gen"
+            mkdir "$projectDir/gen"
+            options.compilerArgs = ['-processor', 'de.dakror.annotations.LmlTagProcessor', '-s', "$projectDir/gen"]
+        }
     }
 }
 tasks.eclipse.doLast {
