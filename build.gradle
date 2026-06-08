@@ -35,6 +35,12 @@ allprojects {
         maven { url 'https://maven.aliyun.com/repository/gradle-plugin' }
         maven { url 'https://maven.aliyun.com/repository/central' }
     }
+    configurations.configureEach {
+        // 全局排除旧版 LWJGL 2.x
+        exclude group: 'org.lwjgl.lwjgl'
+        exclude group: 'net.java.jinput'
+        exclude group: 'net.java.jutils'
+    }
 }
 
 project(":desktop") {
