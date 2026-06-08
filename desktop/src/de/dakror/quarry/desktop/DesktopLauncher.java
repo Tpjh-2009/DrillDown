@@ -78,16 +78,19 @@ public class DesktopLauncher implements PlatformInterface {
                 config.setWindowedMode(720, 405);
             }
             config.setResizable(true);
-            mode = null;
+            mode = WindowMode.Windowed;
         } else {
-            config.setFullscreenMode(dm);
-            mode = WindowMode.Fullscreen;
-//            mode = WindowMode.Borderless;
+            config.setWindowedMode(dm.width, dm.height);
+            config.setDecorated(false);
+            config.setWindowPosition(0, 0);
+            config.setResizable(false);
+//            mode = WindowMode.Fullscreen;
+            mode = WindowMode.Borderless;
 //            mode = null;
         }
 
         config.useVsync(true);
-
+        System.out.println("HERE!!!"+config);
         /////////////////////
 
         int versionCode = 122;
@@ -98,14 +101,14 @@ public class DesktopLauncher implements PlatformInterface {
         this.version = version;
         this.arg = arg;
 
-        config.setWindowIcon("icon-16.png","icon-32.png","icon-64.png");
+        config.setWindowIcon("icon-16.png", "icon-32.png", "icon-64.png");
 
         config.setTitle("Drill Down");
 
         if (arg.length > 0 && arg[0].equals("textures")) {
             try {
-                TexturePacker.main(new String[] { "./Development/Textures/", "./android/assets/", "tex.atlas",
-                        "./android/assets/atlas-settings.json" });
+                TexturePacker.main(new String[]{"./Development/Textures/", "./android/assets/", "tex.atlas",
+                        "./android/assets/atlas-settings.json"});
             } catch (Exception e1) {
                 e1.printStackTrace();
             }
