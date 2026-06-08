@@ -82,8 +82,9 @@ project(":core") {
     dependencies {
         api project(":commons:core")
         api project(":gdx-sfx:core")
-		
-		implementation "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
+
+        implementation "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
+        implementation "com.github.czyzby:gdx-lml:$lmlVersion"
 
         annotationProcessor project(':commons:annotations')
     }
