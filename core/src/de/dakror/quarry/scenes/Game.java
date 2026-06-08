@@ -215,7 +215,7 @@ public class Game extends GameScene {
             for (Amount e : costs.entries) {
                 if (e.getAmount() > 1)
                     addResources(e.getItem(), (int) Math.ceil(e.getAmount()
-                            * (hasScience(ScienceType.ConsiderateConstruction) ? Const.REFUND_CONSIDERATE_PERCENTAGE
+                                    * (hasScience(ScienceType.ConsiderateConstruction) ? Const.REFUND_CONSIDERATE_PERCENTAGE
                                     : Const.REFUND_PERCENTAGE)),
                             true);
             }
@@ -226,7 +226,7 @@ public class Game extends GameScene {
             for (Amount e : costs.entries) {
                 if (e.getAmount() > 1)
                     addResources(e.getItem(), (int) Math.ceil(e.getAmount() * removedHoppers
-                            * (hasScience(ScienceType.ConsiderateConstruction) ? Const.REFUND_CONSIDERATE_PERCENTAGE
+                                    * (hasScience(ScienceType.ConsiderateConstruction) ? Const.REFUND_CONSIDERATE_PERCENTAGE
                                     : Const.REFUND_PERCENTAGE)),
                             true);
             }
@@ -275,9 +275,9 @@ public class Game extends GameScene {
                             for (Structure<?> str : c.getStructures()) {
                                 if (!str.getSchema().has(Flags.Indestructible)
                                         && !(str.x >= x1 + width
-                                                || str.x + str.getWidth() <= x1
-                                                || str.y + str.getHeight() <= y1
-                                                || str.y >= y1 + height)) {
+                                        || str.x + str.getWidth() <= x1
+                                        || str.y + str.getHeight() <= y1
+                                        || str.y >= y1 + height)) {
                                     toDelete.add(str);
                                 }
                             }
@@ -285,9 +285,9 @@ public class Game extends GameScene {
                             for (CopperCable str : c.getCables().values()) {
                                 if (!str.getSchema().has(Flags.Indestructible)
                                         && !(str.x >= x1 + width
-                                                || str.x + str.getWidth() <= x1
-                                                || str.y + str.getHeight() <= y1
-                                                || str.y >= y1 + height)) {
+                                        || str.x + str.getWidth() <= x1
+                                        || str.y + str.getHeight() <= y1
+                                        || str.y >= y1 + height)) {
                                     toDelete.add(str);
                                 }
                             }
@@ -584,12 +584,13 @@ public class Game extends GameScene {
         }
 
         @Override
-        public boolean scrolled(int amount) {
+        public boolean scrolled(float amountX, float amountY) {
+            int amount = (int) amountY;
             if (SMOOTH_CAMERA) {
                 cameraZoomAcc += amount * 2;
                 return true;
             } else {
-                return super.scrolled(amount);
+                return super.scrolled(amountX, amountY);
             }
         }
 
@@ -740,7 +741,8 @@ public class Game extends GameScene {
                 Structure<?> target = null;
                 Direction targetDirection = null;
                 Structure<?> s = activeStructureTrail.get((int) endB.x * layer.height + (int) endB.y);
-                o: for (Direction d : Direction.values) {
+                o:
+                for (Direction d : Direction.values) {
                     Structure<?> q = layer.getStructure((int) endB.x + d.dx, (int) endB.y + d.dy);
                     if (q != null && !activeStructureTrail.containsKey(q.getIndex())) {
                         if (q instanceof Conveyor) {
@@ -790,7 +792,8 @@ public class Game extends GameScene {
             if (activeStructure instanceof Hopper && !pasteMode) {
                 Structure<?> target = null;
                 Direction targetDirection = null;
-                o: for (Direction d : Direction.values) {
+                o:
+                for (Direction d : Direction.values) {
                     Structure<?> q = layer.getStructure(activeStructure.x + d.dx, activeStructure.y + d.dy);
                     if (q != null) {
                         if (q instanceof Conveyor) {
@@ -883,7 +886,8 @@ public class Game extends GameScene {
             if (structure instanceof OilWell) {
                 int count = 0;
 
-                o: for (int i = 0; i < structure.getWidth(); i++) {
+                o:
+                for (int i = 0; i < structure.getWidth(); i++) {
                     for (int j = 0; j < structure.getHeight(); j++) {
                         if (layer.get(structure.x + i, structure.y + j) == TileType.CrudeOil) {
                             count++;
@@ -978,7 +982,7 @@ public class Game extends GameScene {
                         if (liningUpInput == LiningUpState.LiningUp
                                 && liningUpOutput == LiningUpState.LiningUp
                                 && (((DistillationColumn) liningUpStructureInput).getLevels() > 1
-                                        || ((DistillationColumn) liningUpStructureOutput).getLevels() > 1)) {
+                                || ((DistillationColumn) liningUpStructureOutput).getLevels() > 1)) {
 
                             liningUpInput = LiningUpState.NoOther;
                             liningUpOutput = LiningUpState.NoOther;
@@ -1062,7 +1066,7 @@ public class Game extends GameScene {
                     }
                 }
 
-                for (IntMap.Keys iter = activeStructureTrail.keys(); iter.hasNext;) {
+                for (IntMap.Keys iter = activeStructureTrail.keys(); iter.hasNext; ) {
                     if (!Game.this.trailStructureCanBePlaced(iter.next(), (int) (endA.x * layer.height + endA.y),
                             (int) (endB.x * layer.height + endB.y))) {
                         return false;
@@ -1154,7 +1158,8 @@ public class Game extends GameScene {
 
             boolean allDocks = true;
 
-            loop: for (Dock d : structure.getDocks()) {
+            loop:
+            for (Dock d : structure.getDocks()) {
                 if (d.type == myType) {
                     Structure<?> s = layer.getStructure(structure.x + d.x, structure.y + d.y);
                     if (s == null
@@ -1799,7 +1804,7 @@ public class Game extends GameScene {
         for (int r = 0; r <= 360; r += 45) {
             Color c = r == 360 ? Color.WHITE : ColorUtil.HSVtoRGB(r, 100, 100);
             ParticleEmitter p = new ParticleEmitter(pe);
-            p.getTint().setColors(new float[] { c.r, c.g, c.b });
+            p.getTint().setColors(new float[]{c.r, c.g, c.b});
             confettiPfx.getEmitters().add(p);
         }
 
@@ -1931,7 +1936,7 @@ public class Game extends GameScene {
 
         ui.menu.init();
 
-        Gdx.input.setCatchBackKey(true);
+//        Gdx.input.setCatchBackKey(true);
 
         // initialize fbos
         int chunksH = (int) Math.ceil(Const.DEFAULT_LAYER_SIZE / Const.CHUNK_SIZE);
@@ -2072,8 +2077,8 @@ public class Game extends GameScene {
 
         emptyAmb.setVolume(!sfx ? 0
                 : spatializedPlayer.getVolume() *
-                        MathUtils.clamp((cam.zoom - camControl.minZoom) / (camControl.maxZoom - camControl.minZoom), 0,
-                                1));
+                MathUtils.clamp((cam.zoom - camControl.minZoom) / (camControl.maxZoom - camControl.minZoom), 0,
+                        1));
         baseAmb.setVolume(spatializedPlayer.getVolume() *
                 MathUtils.clamp(
                         cam.zoom > 4 || gamePaused || !sfx ? 0 : Math.min(0.5f, loudness) * (1 - (cam.zoom / 4)), 0,
@@ -2286,7 +2291,7 @@ public class Game extends GameScene {
                 shaper.setProjectionMatrix(cam.combined);
                 shaper.begin(ShapeType.Filled);
                 shaper.setColor(0, 1, 0, 0.25f);
-                for (IntSetIterator iter = tutorialHighlight.iterator(); iter.hasNext;) {
+                for (IntSetIterator iter = tutorialHighlight.iterator(); iter.hasNext; ) {
                     int i = iter.next();
                     shaper.rect((i / layer.height) * Const.TILE_SIZE, (i % layer.height) * Const.TILE_SIZE,
                             Const.TILE_SIZE, Const.TILE_SIZE);
@@ -2584,8 +2589,8 @@ public class Game extends GameScene {
 
         if (ui.currentClickedStructure != null
                 && ((ui.structureUIRecipes.isChecked() && !(ui.currentClickedStructure instanceof ShaftDrillHead)
-                        || (!ui.structureUIRecipes.isVisible()
-                                && !(ui.currentClickedStructure instanceof ProducerStructure))))
+                || (!ui.structureUIRecipes.isVisible()
+                && !(ui.currentClickedStructure instanceof ProducerStructure))))
                 && ui.currentClickedStructure.layer == layer) {
             drawStructureAssists(ui.currentClickedStructure, ui.currentRecipe);
         }
@@ -3019,7 +3024,7 @@ public class Game extends GameScene {
 
             float rot = -90 * (d.dir.ordinal()
                     + (d.type == DockType.FluidOut || d.type == DockType.ItemOut || structure instanceof Filter ? 2
-                            : 0));
+                    : 0));
 
             if (activeStructure != null) {
                 if (d.type == DockType.StackIn) {
@@ -3093,7 +3098,7 @@ public class Game extends GameScene {
         return true;
     }
 
-    //////////////////////////////////////////////////////
+    /// ///////////////////////////////////////////////////
 
     public synchronized void addResources(ItemType item, int amount, boolean addToAStorage) {
         if (amount <= 0)
@@ -3104,7 +3109,8 @@ public class Game extends GameScene {
 
             if (addToAStorage) {
                 synchronized (layerLock) {
-                    o: for (Layer layer : layerIter) {
+                    o:
+                    for (Layer layer : layerIter) {
                         for (StorageStructure b : layer.storages) {
                             if (!b.isRefundStorage())
                                 continue;
@@ -3258,7 +3264,7 @@ public class Game extends GameScene {
         }
     }
 
-    //////////////////////////////////////////////////////
+    /// ///////////////////////////////////////////////////
 
     public synchronized boolean hasSciences(Collection<ScienceType> sciencesRequired) {
         if (GOD_MODE)
@@ -3298,7 +3304,7 @@ public class Game extends GameScene {
         currentSciences.add(science);
     }
 
-    //////////////////////////////////////////////////////
+    /// ///////////////////////////////////////////////////
 
     public void save(Callback<Void> callback) {
         save(currentGameName, true, callback);
@@ -3757,7 +3763,7 @@ public class Game extends GameScene {
         }
     }
 
-    //////////////////////////////////////////////////////
+    /// ///////////////////////////////////////////////////
 
     public void exportBlueprint() {
         NBT.Builder b = new NBT.Builder("Blueprint")
@@ -3869,7 +3875,7 @@ public class Game extends GameScene {
         camControl.updateActiveElementPlaceable();
     }
 
-    //////////////////////////////////////////////////////
+    /// ///////////////////////////////////////////////////
 
     public void resetActiveStructure() {
         activeStructure = null;
@@ -4095,7 +4101,7 @@ public class Game extends GameScene {
         lastTimerStart = System.currentTimeMillis();
     }
 
-    //////////////////////////////////////////////////////
+    /// ///////////////////////////////////////////////////
 
     public boolean isInfinite() {
         return infinite;

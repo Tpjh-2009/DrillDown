@@ -12,7 +12,6 @@ project.ext.mainClassName = "de.dakror.quarry.desktop.DesktopLauncher"
 project.ext.assetsDir = new File("../android/assets")
 
 task run(dependsOn: classes, type: JavaExec) {
-    main = project.mainClassName
     classpath = sourceSets.main.runtimeClasspath
     standardInput = System.in
     workingDir = project.assetsDir
@@ -20,7 +19,6 @@ task run(dependsOn: classes, type: JavaExec) {
 }
 
 task debug(dependsOn: classes, type: JavaExec) {
-    main = project.mainClassName
     classpath = sourceSets.main.runtimeClasspath
     standardInput = System.in
     workingDir = project.assetsDir
@@ -29,28 +27,26 @@ task debug(dependsOn: classes, type: JavaExec) {
 }
 
 task dist(type: Jar) {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     from files(sourceSets.main.output.classesDirs)
     from files(sourceSets.main.output.resourcesDir)
-    from {configurations.compileClasspath.collect {it.isDirectory() ? it : zipTree(it)}}
-    //from files(project.assetsDir)
- 
+    from { configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
+    // from files(project.assetsDir) // 如需打包资源，可取消注释
+
     manifest {
         attributes(
-       		'Main-Class': project.mainClassName,
-            'Premain-Class':           'de.dakror.modding.stub.StubAgent',
-            'Agent-Class':             'de.dakror.modding.stub.StubAgent',
-            'Launcher-Agent-Class':    'de.dakror.modding.stub.StubAgent',
-            'Can-Redefine-Classes':    'true',
-            'Can-Retransform-Classes': 'true',
+                'Main-Class': project.mainClassName,
+                'Premain-Class': 'de.dakror.modding.stub.StubAgent',
+                'Agent-Class': 'de.dakror.modding.stub.StubAgent',
+                'Launcher-Agent-Class': 'de.dakror.modding.stub.StubAgent',
+                'Can-Redefine-Classes': 'true',
+                'Can-Retransform-Classes': 'true',
         )
     }
 }
 
 dist.dependsOn classes
 
-compileJava {
-    options.release = 8
-}
 eclipse {
     project {
         name = appName + "-desktop"

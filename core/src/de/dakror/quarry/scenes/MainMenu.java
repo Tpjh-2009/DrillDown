@@ -181,10 +181,7 @@ public class MainMenu extends Scene implements Ui {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 Quarry.Q.sound.play(Quarry.Q.clickSfx);
-                alert.show(MainMenu.this, Quarry.Q.i18n.get("alert.language_change"), new Callback<Void>() {
-                    @Override
-                    public void call(Void data) {}
-                });
+                alert.show(MainMenu.this, Quarry.Q.i18n.get("alert.language_change"), data -> {});
                 Quarry.Q.prefs.putBoolean("chinese", !de.isChecked()).flush();
             }
         });
@@ -196,22 +193,19 @@ public class MainMenu extends Scene implements Ui {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 ((TextButton) actor).setChecked(false);
-                seedPrompt.show(MainMenu.this, Quarry.Q.i18n.get("prompt.seed"), Long.toString((long) (Math.random() * Long.MAX_VALUE)), new Response<String, Boolean>() {
-                    @Override
-                    public Boolean call(String data) {
-                        if (data != null) {
-                            long seed = 0;
-                            try {
-                                seed = Long.parseLong(data.trim());
-                            } catch (NumberFormatException e) {
-                                seed = Util.hash(data);
-                            }
-                            Generator.G.setSeed(seed);
-                            fadeOut = true;
-                            newGame = true;
+                seedPrompt.show(MainMenu.this, Quarry.Q.i18n.get("prompt.seed"), Long.toString((long) (Math.random() * Long.MAX_VALUE)), data -> {
+                    if (data != null) {
+                        long seed;
+                        try {
+                            seed = Long.parseLong(data.trim());
+                        } catch (NumberFormatException e) {
+                            seed = Util.hash(data);
                         }
-                        return true;
+                        Generator.G.setSeed(seed);
+                        fadeOut = true;
+                        newGame = true;
                     }
+                    return true;
                 });
             }
         });

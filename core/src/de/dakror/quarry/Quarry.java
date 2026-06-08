@@ -83,7 +83,7 @@ public class Quarry extends GameBase implements PlatformInterface {
     public ExecutorService threadPool = Executors.newSingleThreadExecutor();//newCachedThreadPool();
 
     public Quarry(PlatformInterface pi, boolean fullVersion, int versionNumber, String version, boolean desktop,
-            boolean newAndroid, WindowMode mode) {
+                  boolean newAndroid, WindowMode mode) {
         super(mode, desktop, pi);
         this.fullVersion = fullVersion;
         this.versionNumber = versionNumber;
@@ -213,11 +213,11 @@ public class Quarry extends GameBase implements PlatformInterface {
 
         System.out.println("Game init took " + (System.currentTimeMillis() - t) + " ms");
 
-        // 初始化FBOS
+        // 初始化FBOs
         chunkFBOs = new FrameBuffer[(Const.DEFAULT_LAYER_SIZE / Const.CHUNK_SIZE)
                 * (Const.DEFAULT_LAYER_SIZE / Const.CHUNK_SIZE)];
 
-        int chunksH = (int) Math.ceil(Const.DEFAULT_LAYER_SIZE / Const.CHUNK_SIZE);
+        int chunksH = (int) Math.ceil((double) Const.DEFAULT_LAYER_SIZE / Const.CHUNK_SIZE);
         for (int i = 0; i < Const.DEFAULT_LAYER_SIZE; i += Const.CHUNK_SIZE) {
             for (int j = 0; j < Const.DEFAULT_LAYER_SIZE; j += Const.CHUNK_SIZE) {
                 chunkFBOs[i / Const.CHUNK_SIZE * chunksH + j / Const.CHUNK_SIZE] = new FrameBuffer(Format.RGB888,

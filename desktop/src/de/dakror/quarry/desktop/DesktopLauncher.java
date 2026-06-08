@@ -37,11 +37,10 @@ import javax.swing.JTextPane;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 
-import com.badlogic.gdx.Files.FileType;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Graphics.DisplayMode;
-import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
-import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
+import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
+import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
 import com.badlogic.gdx.tools.texturepacker.TexturePacker;
 import com.github.czyzby.lml.parser.impl.tag.Dtd;
 
@@ -67,28 +66,27 @@ public class DesktopLauncher implements PlatformInterface {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
-        DisplayMode dm = LwjglApplicationConfiguration.getDesktopDisplayMode();
+        Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
+        DisplayMode dm = Lwjgl3ApplicationConfiguration.getDisplayMode();
 
-        WindowMode mode = null;
+        WindowMode mode;
 
         if (arg.length > 0 && (arg[0].equals("debug") || arg[0].equals("meta") || arg[0].equals("windowed"))) {
             if (dm.width == 1920) {
-                config.width = 1280;
-                config.height = 720;
+                config.setWindowedMode(1280, 720);
             } else {
-                config.width = 720;
-                config.height = 405;
+                config.setWindowedMode(720, 405);
             }
-            config.resizable = true;
+            config.setResizable(true);
+            mode = null;
         } else {
-            config.width = dm.width;
-            config.height = dm.height;
-            mode = WindowMode.Borderless;
+            config.setFullscreenMode(dm);
+            mode = WindowMode.Fullscreen;
+//            mode = WindowMode.Borderless;
+//            mode = null;
         }
 
-        config.vSyncEnabled = true;
-        config.audioDeviceSimultaneousSources = 32;
+        config.useVsync(true);
 
         /////////////////////
 
@@ -100,11 +98,9 @@ public class DesktopLauncher implements PlatformInterface {
         this.version = version;
         this.arg = arg;
 
-        config.addIcon("icon-16.png", FileType.Internal);
-        config.addIcon("icon-32.png", FileType.Internal);
-        config.addIcon("icon-64.png", FileType.Internal);
+        config.setWindowIcon("icon-16.png","icon-32.png","icon-64.png");
 
-        config.title = "Drill Down";
+        config.setTitle("Drill Down");
 
         if (arg.length > 0 && arg[0].equals("textures")) {
             try {
@@ -117,7 +113,7 @@ public class DesktopLauncher implements PlatformInterface {
 
         DesktopAudioDurationResolver.initialize();
         Quarry game = new Quarry(this, true, versionCode, version, true, false, mode);
-        new LwjglApplication(game, config);
+        new Lwjgl3Application(game, config);
     }
 
     @Override
@@ -143,7 +139,7 @@ public class DesktopLauncher implements PlatformInterface {
 
                     JTextPane l1 = new JTextPane();
                     l1.setContentType("text/html");
-                    l1.setText("<html><pre>" + sw.toString() + "</pre></html>");
+                    l1.setText("<html><pre>" + sw + "</pre></html>");
                     l1.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 14));
                     JScrollPane jsp = new JScrollPane(l1, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                             JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
