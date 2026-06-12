@@ -157,13 +157,13 @@ public class Quarry extends GameBase implements PlatformInterface {
     @Override
     public void pause() {
         // 等待保存完成，直到允许暂停
-        try {
-            threadPool.shutdown();
-            threadPool.awaitTermination(10, TimeUnit.SECONDS);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        threadPool = Executors.newSingleThreadExecutor();
+//        try {
+//            threadPool.shutdown();
+//            threadPool.awaitTermination(10, TimeUnit.SECONDS);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+//        threadPool = Executors.newSingleThreadExecutor();
         super.pause();
         sound.pauseMusic();
     }
