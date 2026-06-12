@@ -16,46 +16,19 @@
 
 package de.dakror.quarry.scenes;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.EnumMap;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.regex.Pattern;
-
 import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.Pixmap.Format;
-import com.badlogic.gdx.graphics.PixmapIO;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.ParticleEffect;
-import com.badlogic.gdx.graphics.g2d.ParticleEffectPool;
+import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.graphics.g2d.ParticleEffectPool.PooledEffect;
-import com.badlogic.gdx.graphics.g2d.ParticleEmitter;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -65,15 +38,10 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
-import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.Base64Coder;
-import com.badlogic.gdx.utils.IntMap;
-import com.badlogic.gdx.utils.IntSet;
+import com.badlogic.gdx.utils.*;
 import com.badlogic.gdx.utils.IntSet.IntSetIterator;
-import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-
 import de.dakror.common.Callback;
 import de.dakror.common.debug.Delta;
 import de.dakror.common.libgdx.ChangeNotifier;
@@ -84,13 +52,7 @@ import de.dakror.common.libgdx.PlatformInterface;
 import de.dakror.common.libgdx.audio.AmbientSound;
 import de.dakror.common.libgdx.io.ByteArrayFileHandle;
 import de.dakror.common.libgdx.io.NBT;
-import de.dakror.common.libgdx.io.NBT.Builder;
-import de.dakror.common.libgdx.io.NBT.CompoundTag;
-import de.dakror.common.libgdx.io.NBT.CompressionType;
-import de.dakror.common.libgdx.io.NBT.ListTag;
-import de.dakror.common.libgdx.io.NBT.NBTException;
-import de.dakror.common.libgdx.io.NBT.Tag;
-import de.dakror.common.libgdx.io.NBT.TagType;
+import de.dakror.common.libgdx.io.NBT.*;
 import de.dakror.common.libgdx.math.AStar;
 import de.dakror.common.libgdx.math.AStar.Network;
 import de.dakror.common.libgdx.math.AStar.Visitor;
@@ -100,16 +62,11 @@ import de.dakror.common.libgdx.ui.ColorUtil;
 import de.dakror.common.libgdx.ui.GameScene;
 import de.dakror.quarry.Const;
 import de.dakror.quarry.Quarry;
-import de.dakror.quarry.game.Chunk;
-import de.dakror.quarry.game.Generator;
-import de.dakror.quarry.game.Item;
+import de.dakror.quarry.game.*;
 import de.dakror.quarry.game.Item.ItemCategory;
 import de.dakror.quarry.game.Item.ItemType;
 import de.dakror.quarry.game.Item.Items;
 import de.dakror.quarry.game.Item.Items.Amount;
-import de.dakror.quarry.game.Layer;
-import de.dakror.quarry.game.LoadingCompat;
-import de.dakror.quarry.game.Science;
 import de.dakror.quarry.game.Science.ScienceType;
 import de.dakror.quarry.game.Tile.TileMeta;
 import de.dakror.quarry.game.Tile.TileType;
@@ -121,39 +78,15 @@ import de.dakror.quarry.structure.Boiler;
 import de.dakror.quarry.structure.DistillationColumn;
 import de.dakror.quarry.structure.Refinery;
 import de.dakror.quarry.structure.ShaftDrillHead;
-import de.dakror.quarry.structure.base.Direction;
-import de.dakror.quarry.structure.base.Dock;
+import de.dakror.quarry.structure.base.*;
 import de.dakror.quarry.structure.base.Dock.DockType;
-import de.dakror.quarry.structure.base.FluidTubeStructure;
-import de.dakror.quarry.structure.base.IRotatable;
-import de.dakror.quarry.structure.base.ProducerStructure;
 import de.dakror.quarry.structure.base.RecipeList.Recipe;
 import de.dakror.quarry.structure.base.Schema.Flags;
-import de.dakror.quarry.structure.base.StorageStructure;
-import de.dakror.quarry.structure.base.Structure;
-import de.dakror.quarry.structure.base.StructureType;
 import de.dakror.quarry.structure.base.component.CInventory;
 import de.dakror.quarry.structure.base.component.CSingleInventory;
-import de.dakror.quarry.structure.logistics.BrickChannel;
-import de.dakror.quarry.structure.logistics.Conveyor;
-import de.dakror.quarry.structure.logistics.ConveyorBridge;
-import de.dakror.quarry.structure.logistics.ElectricConveyorCore;
+import de.dakror.quarry.structure.logistics.*;
 import de.dakror.quarry.structure.logistics.Filter;
-import de.dakror.quarry.structure.logistics.Hopper;
-import de.dakror.quarry.structure.logistics.ItemLift;
-import de.dakror.quarry.structure.logistics.ItemLiftBelow;
-import de.dakror.quarry.structure.logistics.TubeShaft;
-import de.dakror.quarry.structure.logistics.TubeShaftBelow;
-import de.dakror.quarry.structure.power.CableShaft;
-import de.dakror.quarry.structure.power.CableShaftBelow;
-import de.dakror.quarry.structure.power.CopperCable;
-import de.dakror.quarry.structure.power.GasTurbine;
-import de.dakror.quarry.structure.power.HighPowerShaft;
-import de.dakror.quarry.structure.power.HighPowerShaftBelow;
-import de.dakror.quarry.structure.power.PowerPole;
-import de.dakror.quarry.structure.power.SolarPanel;
-import de.dakror.quarry.structure.power.SolarPanelOutlet;
-import de.dakror.quarry.structure.power.Substation;
+import de.dakror.quarry.structure.power.*;
 import de.dakror.quarry.structure.producer.AirPurifier;
 import de.dakror.quarry.structure.producer.Excavator;
 import de.dakror.quarry.structure.producer.Mine;
@@ -161,11 +94,12 @@ import de.dakror.quarry.structure.producer.OilWell;
 import de.dakror.quarry.structure.storage.Barrel;
 import de.dakror.quarry.structure.storage.Storage;
 import de.dakror.quarry.structure.storage.Tank;
-import de.dakror.quarry.util.Bounds;
-import de.dakror.quarry.util.QuarrySoundPlayer;
-import de.dakror.quarry.util.SpriterDelegateBatch;
-import de.dakror.quarry.util.StructureSoundSpatializer;
-import de.dakror.quarry.util.Util;
+import de.dakror.quarry.util.*;
+
+import java.io.*;
+import java.nio.ByteBuffer;
+import java.util.*;
+import java.util.regex.Pattern;
 
 /**
  * @author Maximilian Stark | Dakror
@@ -183,6 +117,15 @@ public class Game extends GameScene {
             activeEnd = 0;
 
             return super.touchUp(screenX, screenY, pointer, button);
+        }
+
+        @Override
+        public boolean pinch(Vector2 initialPointer1, Vector2 initialPointer2, Vector2 pointer1, Vector2 pointer2) {
+            return false;
+        }
+
+        @Override
+        public void pinchStop() {
         }
 
         @Override
@@ -585,9 +528,8 @@ public class Game extends GameScene {
 
         @Override
         public boolean scrolled(float amountX, float amountY) {
-            int amount = (int) amountY;
             if (SMOOTH_CAMERA) {
-                cameraZoomAcc += amount * 2;
+                cameraZoomAcc += amountY * 2;
                 return true;
             } else {
                 return super.scrolled(amountX, amountY);
@@ -1936,7 +1878,7 @@ public class Game extends GameScene {
 
         ui.menu.init();
 
-//        Gdx.input.setCatchBackKey(true);
+        Gdx.input.setCatchKey(Input.Keys.BACK, true);
 
         // initialize fbos
         int chunksH = (int) Math.ceil(Const.DEFAULT_LAYER_SIZE / Const.CHUNK_SIZE);

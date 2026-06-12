@@ -89,13 +89,7 @@ public class LoadingScreen extends Scene {
 
         Quarry.Q.atlas = assets.get("tex.atlas");
 
-
         Quarry.Q.skin = assets.get("skin.json");
-//        Quarry.Q.font = Quarry.Q.skin.getFont("default-font");
-//
-//        Quarry.Q.font.getData().markupEnabled = true;
-//        Quarry.Q.font.setFixedWidthGlyphs("0123456789-+");
-//        Quarry.Q.skin.getFont("small-font").setFixedWidthGlyphs("0123456789");
 
         progress = Quarry.Q.atlas.findRegion("structure_conveyor_we");
         bg = Quarry.Q.atlas.findRegion("button");

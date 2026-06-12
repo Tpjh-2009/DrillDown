@@ -30,13 +30,13 @@ allprojects {
     }
     ext {
         appName = "DrillDown"
-        gdxVersion = '1.9.10'
-        lwjglVersion = '3.2.3'
-        roboVMVersion = '2.3.20'
-        box2DLightsVersion = '1.5'
+        gdxVersion = '1.14.0'
+        lwjglVersion = '3.3.6'
+        roboVMVersion = '2.3.25'
+        box2DLightsVersion = '1.5.3'
         ashleyVersion = '1.7.4'
         aiVersion = '1.8.2'
-        lmlVersion = '1.9.1.9.6'
+        lmlVersion = '1.10.1.12.1'
         robopodsVersion = '5.16.0'
     }
 
@@ -97,7 +97,7 @@ project(":core") {
         api project(":gdx-sfx:core")
 
         implementation "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
-        implementation "com.github.czyzby:gdx-lml:$lmlVersion"
+        implementation "com.crashinvaders.lml:gdx-lml-vis:$lmlVersion"
 
         annotationProcessor project(':commons:annotations')
     }

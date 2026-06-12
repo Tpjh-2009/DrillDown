@@ -16,15 +16,9 @@
 
 package de.dakror.quarry.util;
 
-import java.math.BigInteger;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.Map;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.utils.Array;
-
 import de.dakror.common.libgdx.io.NBT.Builder;
 import de.dakror.common.libgdx.io.NBT.CompoundTag;
 import de.dakror.common.libgdx.io.NBT.NBTException;
@@ -32,6 +26,11 @@ import de.dakror.common.libgdx.lml.CustomTag;
 import de.dakror.quarry.Quarry;
 import de.dakror.quarry.game.Item;
 import de.dakror.quarry.game.Item.ItemType;
+
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Map;
 
 /**
  * @author Maximilian Stark | Dakror

@@ -16,11 +16,6 @@
 
 package de.dakror.quarry.ui;
 
-import static com.badlogic.gdx.scenes.scene2d.actions.Actions.*;
-
-import java.util.Arrays;
-import java.util.Comparator;
-
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
@@ -29,22 +24,13 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane.ScrollPaneStyle;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
 import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
-
 import de.dakror.common.Callback;
-import de.dakror.common.Response;
 import de.dakror.common.libgdx.PlatformInterface;
 import de.dakror.common.libgdx.io.NBT.CompoundTag;
 import de.dakror.quarry.Const;
@@ -55,6 +41,10 @@ import de.dakror.quarry.scenes.Game;
 import de.dakror.quarry.scenes.GameUi;
 import de.dakror.quarry.scenes.MainMenu;
 import de.dakror.quarry.util.Util;
+
+import java.util.Arrays;
+
+import static com.badlogic.gdx.scenes.scene2d.actions.Actions.*;
 
 /**
  * @author Maximilian Stark | Dakror

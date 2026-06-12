@@ -16,39 +16,27 @@
 
 package de.dakror.quarry.desktop;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Toolkit;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.StringSelection;
-import java.awt.event.ActionEvent;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.io.Writer;
-
-import javax.swing.AbstractAction;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextPane;
-import javax.swing.UIManager;
-import javax.swing.border.EmptyBorder;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Graphics.DisplayMode;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
 import com.badlogic.gdx.tools.texturepacker.TexturePacker;
 import com.github.czyzby.lml.parser.impl.tag.Dtd;
-
 import de.dakror.common.libgdx.GameBase.WindowMode;
 import de.dakror.common.libgdx.PlatformInterface;
 import de.dakror.quarry.Const;
 import de.dakror.quarry.Quarry;
 import net.spookygames.gdx.sfx.desktop.DesktopAudioDurationResolver;
+
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import java.awt.*;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.StringSelection;
+import java.awt.event.ActionEvent;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.Writer;
 
 public class DesktopLauncher implements PlatformInterface {
     public static void main(String[] arg) {
@@ -67,30 +55,14 @@ public class DesktopLauncher implements PlatformInterface {
             e.printStackTrace();
         }
         Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
-        DisplayMode dm = Lwjgl3ApplicationConfiguration.getDisplayMode();
 
         WindowMode mode;
 
-        if (arg.length > 0 && (arg[0].equals("debug") || arg[0].equals("meta") || arg[0].equals("windowed"))) {
-            if (dm.width == 1920) {
-                config.setWindowedMode(1280, 720);
-            } else {
-                config.setWindowedMode(720, 405);
-            }
-            config.setResizable(true);
-            mode = WindowMode.Windowed;
-        } else {
-            config.setWindowedMode(dm.width, dm.height);
-            config.setDecorated(false);
-            config.setWindowPosition(0, 0);
-            config.setResizable(false);
-//            mode = WindowMode.Fullscreen;
-            mode = WindowMode.Borderless;
-//            mode = null;
-        }
+//        mode = WindowMode.Windowed;
+        mode = WindowMode.Borderless;
+//        mode = WindowMode.Fullscreen;
 
         config.useVsync(true);
-        System.out.println("HERE!!!"+config);
         /////////////////////
 
         int versionCode = 122;
