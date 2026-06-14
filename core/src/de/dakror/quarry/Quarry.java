@@ -237,11 +237,13 @@ public class Quarry extends GameBase implements PlatformInterface {
         FileHandle[] local = Gdx.files.local("TheQuarry/saves/").list(".qsf");
         FileHandle[] external = Gdx.files.external("TheQuarry/saves/").list(".qsf");
 
-        FileHandle[] all = new FileHandle[local.length + external.length];
-        System.arraycopy(local, 0, all, 0, local.length);
-        System.arraycopy(external, 0, all, local.length, external.length);
-
-        return all;
+        Map<String,FileHandle> map= new LinkedHashMap<>();
+        for (FileHandle f : local)
+            map.put(f.file().getAbsolutePath(), f);
+        for (FileHandle f : external)
+            map.putIfAbsent(f.file().getAbsolutePath(), f);
+        System.out.println(map);
+        return map.values().toArray(new FileHandle[0]);
     }
 
     public FileHandle file(String text, boolean write) {
