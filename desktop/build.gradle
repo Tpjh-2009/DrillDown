@@ -1,3 +1,6 @@
+import groovy.xml.XmlNodePrinter
+import groovy.xml.XmlParser
+
 apply plugin: "java"
 
 java {
@@ -11,22 +14,24 @@ sourceSets.main.resources.srcDirs = [project(":android").file("assets")]
 project.ext.mainClassName = "de.dakror.quarry.desktop.DesktopLauncher"
 project.ext.assetsDir = new File("../android/assets")
 
-task run(dependsOn: classes, type: JavaExec) {
+tasks.register('run', JavaExec) {
+    dependsOn classes
     classpath = sourceSets.main.runtimeClasspath
     standardInput = System.in
     workingDir = project.assetsDir
-    ignoreExitValue = true
+    ignoreExitValue = true as JavaExecSpec
 }
 
-task debug(dependsOn: classes, type: JavaExec) {
+tasks.register('debug', JavaExec) {
+    dependsOn classes
     classpath = sourceSets.main.runtimeClasspath
     standardInput = System.in
     workingDir = project.assetsDir
-    ignoreExitValue = true
-    debug = true
+    ignoreExitValue = true as JavaExecSpec
+    debug = true as JavaExec
 }
 
-task dist(type: Jar) {
+tasks.register('dist', Jar) {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     from files(sourceSets.main.output.classesDirs)
     from files(sourceSets.main.output.resourcesDir)
@@ -45,7 +50,9 @@ task dist(type: Jar) {
     }
 }
 
-dist.dependsOn classes
+tasks.dist.dependsOn(project(':core').tasks.jar)
+tasks.dist.dependsOn(project(':gdx-sfx:core').tasks.jar)
+tasks.dist.dependsOn classes
 
 eclipse {
     project {
@@ -54,12 +61,12 @@ eclipse {
     }
 }
 
-task afterEclipseImport(description: "Post processing after project generation", group: "IDE") {
+tasks.register('afterEclipseImport') {
     doLast {
-        def classpath = new groovy.xml.XmlParser().parse(file(".classpath"))
+        def classpath = new XmlParser().parse(file(".classpath"))
         new Node(classpath, "classpathentry", [kind: 'src', path: 'assets'])
         def writer = new FileWriter(file(".classpath"))
-        def printer = new groovy.xml.XmlNodePrinter(new PrintWriter(writer))
+        def printer = new XmlNodePrinter(new PrintWriter(writer))
         printer.setPreserveWhitespace(true)
         printer.print(classpath)
     }

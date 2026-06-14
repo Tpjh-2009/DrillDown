@@ -16,11 +16,6 @@
 
 package de.dakror.quarry;
 
-import java.util.Locale;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Gdx;
@@ -38,16 +33,22 @@ import com.github.czyzby.lml.parser.LmlParser;
 import com.github.czyzby.lml.parser.impl.DefaultLmlSyntax;
 import com.github.czyzby.lml.util.Lml;
 import com.github.czyzby.lml.util.LmlParserBuilder;
-
 import de.dakror.common.libgdx.GameBase;
 import de.dakror.common.libgdx.I18NBundleDelegate;
 import de.dakror.common.libgdx.PlatformInterface;
 import de.dakror.common.libgdx.audio.SoundManager;
 import de.dakror.common.libgdx.ui.Scene;
+import de.dakror.gen.CustomTagRegistrator;
 import de.dakror.quarry.scenes.Game;
 import de.dakror.quarry.scenes.LoadingScreen;
 import de.dakror.quarry.scenes.MainMenu;
-import de.dakror.gen.CustomTagRegistrator;
+
+import java.util.LinkedHashMap;
+import java.util.Locale;
+import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Maximilian Stark | Dakror
@@ -157,13 +158,13 @@ public class Quarry extends GameBase implements PlatformInterface {
     @Override
     public void pause() {
         // 等待保存完成，直到允许暂停
-//        try {
-//            threadPool.shutdown();
-//            threadPool.awaitTermination(10, TimeUnit.SECONDS);
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
-//        threadPool = Executors.newSingleThreadExecutor();
+        try {
+            threadPool.shutdown();
+            threadPool.awaitTermination(10, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        threadPool = Executors.newSingleThreadExecutor();
         super.pause();
         sound.pauseMusic();
     }
@@ -239,10 +240,9 @@ public class Quarry extends GameBase implements PlatformInterface {
 
         Map<String,FileHandle> map= new LinkedHashMap<>();
         for (FileHandle f : local)
-            map.put(f.file().getAbsolutePath(), f);
+            map.putIfAbsent(f.file().getAbsolutePath(), f);
         for (FileHandle f : external)
             map.putIfAbsent(f.file().getAbsolutePath(), f);
-        System.out.println(map);
         return map.values().toArray(new FileHandle[0]);
     }
 
