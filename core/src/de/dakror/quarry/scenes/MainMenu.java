@@ -271,7 +271,7 @@ public class MainMenu extends Scene implements Ui {
                         public int compare(FileHandle o1, FileHandle o2) {
                             long y = o1.lastModified();
                             long x = o2.lastModified();
-                            return (x < y) ? -1 : ((x == y) ? 0 : 1);
+                            return Long.compare(x, y);
                         }
                     });
 
