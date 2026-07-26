@@ -16,8 +16,6 @@
 
 package de.dakror.quarry.game;
 
-import java.util.EnumSet;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -29,16 +27,11 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.viewport.Viewport;
-
 import de.dakror.common.libgdx.ChangeNotifier.Event;
 import de.dakror.common.libgdx.ChangeNotifier.Listener;
 import de.dakror.common.libgdx.Pair;
 import de.dakror.common.libgdx.PlatformInterface;
-import de.dakror.common.libgdx.io.NBT.Builder;
-import de.dakror.common.libgdx.io.NBT.CompoundTag;
-import de.dakror.common.libgdx.io.NBT.NBTException;
-import de.dakror.common.libgdx.io.NBT.Tag;
-import de.dakror.common.libgdx.io.NBT.TagType;
+import de.dakror.common.libgdx.io.NBT.*;
 import de.dakror.common.libgdx.render.DepthSpriter;
 import de.dakror.quarry.Const;
 import de.dakror.quarry.Quarry;
@@ -47,18 +40,16 @@ import de.dakror.quarry.game.Item.ItemType;
 import de.dakror.quarry.game.Tile.TileMeta;
 import de.dakror.quarry.game.Tile.TileType;
 import de.dakror.quarry.scenes.Game;
-import de.dakror.quarry.structure.base.Direction;
-import de.dakror.quarry.structure.base.Dock;
+import de.dakror.quarry.structure.base.*;
 import de.dakror.quarry.structure.base.Dock.DockType;
-import de.dakror.quarry.structure.base.ITube;
-import de.dakror.quarry.structure.base.StorageStructure;
-import de.dakror.quarry.structure.base.Structure;
 import de.dakror.quarry.structure.logistics.Conveyor;
 import de.dakror.quarry.structure.logistics.Hopper;
 import de.dakror.quarry.structure.power.CopperCable;
 import de.dakror.quarry.util.Bounds;
 import de.dakror.quarry.util.Savable;
 import de.dakror.quarry.util.SpriterDelegateBatch;
+
+import java.util.EnumSet;
 
 /**
  * @author Maximilian Stark | Dakror
@@ -112,6 +103,8 @@ public class Layer implements Disposable, Savable, Listener<Layer> {
     public final Bounds dirtyBounds = new Bounds();
     public final Bounds lastBounds = new Bounds();
     public final Bounds pendingBounds = new Bounds();
+    private final Bounds dirtyCopy = new Bounds();
+    private volatile boolean disposed = false;
 
     public Layer(int index, int initialWidth, int initialHeight, TileType defaultTile, boolean initChunks, boolean initGL) {
         this.width = initialWidth;
@@ -143,7 +136,9 @@ public class Layer implements Disposable, Savable, Listener<Layer> {
     @Override
     public void onChangeEvent(Event<Layer> event) {
         if (event.getData() != null && Math.abs(event.getData().getIndex() - getIndex()) > 3) {
-            dispose();
+            Gdx.app.postRunnable(() -> {
+                if (!disposed) dispose();
+            });
         }
     }
 
@@ -176,7 +171,7 @@ public class Layer implements Disposable, Savable, Listener<Layer> {
     }
 
     public void updateLoudness(double deltaTime) {
-        lastLoudnessCalculation -= deltaTime;
+        lastLoudnessCalculation -= (float) deltaTime;
         if (lastLoudnessCalculation <= 0 || updateLoudnessFlag) {
             synchronized (loudnessLock) {
                 if (loudness == null) {
@@ -295,30 +290,34 @@ public class Layer implements Disposable, Savable, Listener<Layer> {
             synchronized (loudnessLock) {
                 updateLoudnessFlag = true;
             }
-
-            lastBounds.set(dirtyBounds);
-
             pendingBounds.add(dirtyBounds);
-
             dirtyBounds.clear();
             fromLoading = false;
         }
     }
 
     public void draw(OrthographicCamera cam, OrthographicCamera fboCam, Viewport viewport,
-            Batch batch, DepthSpriter spriter, ShapeRenderer shaper, SpriterDelegateBatch delegateBatch) {
+                     Batch batch, DepthSpriter spriter, ShapeRenderer shaper, SpriterDelegateBatch delegateBatch) {
         if (!initialized) {
             Game.G.layerChangeNotifier.addListener(this);
             initialized = true;
         }
-        synchronized (chunkLock) {
-            for (Chunk c : chunks) {
-                if (c.isInBounds(cam, true) || dirtyBounds.intersects(c.ax, c.ay, Const.CHUNK_SIZE, Const.CHUNK_SIZE)) {
-                    c.draw(cam, fboCam, viewport, batch);
-                }
-            }
+
+        synchronized (dirtyBounds) {
+            dirtyCopy.set(dirtyBounds);
+            dirtyBounds.clear();
         }
 
+        Chunk[] snapshot;
+        synchronized (chunkLock) {
+            snapshot = chunks.clone();
+        }
+
+        for (Chunk c : snapshot) {
+            if (c.isInBounds(cam, true) || dirtyBounds.intersects(c.ax, c.ay, Const.CHUNK_SIZE, Const.CHUNK_SIZE)) {
+                c.draw(cam, fboCam, viewport, batch);
+            }
+        }
         synchronized (pfxLock) {
             for (int i = pfxBelow.size - 1; i >= 0; i--) {
                 PooledEffect effect = pfxBelow.get(i);
@@ -336,26 +335,13 @@ public class Layer implements Disposable, Savable, Listener<Layer> {
         spriter.setProjectionMatrix(cam.combined);
         spriter.begin(false);
 
-        synchronized (chunkLock) {
-            for (Chunk c : chunks) {
-                if (c.isInBounds(cam, false) || dirtyBounds.intersects(c.ax, c.ay, Const.CHUNK_SIZE, Const.CHUNK_SIZE)) {
-                    c.drawStructures(spriter, dirtyBounds);
-                }
+        for (Chunk c : snapshot) {
+            if (c.isInBounds(cam, false) || dirtyCopy.intersects(c.ax, c.ay, Const.CHUNK_SIZE, Const.CHUNK_SIZE)) {
+                c.drawStructures(spriter, dirtyCopy);
             }
-        }
-
-        if (!dirtyBounds.isEmpty() || fromLoading) {
-            synchronized (loudnessLock) {
-                updateLoudnessFlag = true;
-            }
-
-            lastBounds.set(dirtyBounds);
-            dirtyBounds.clear();
-            fromLoading = false;
         }
 
         spriter.end();
-
         batch.begin();
 
         synchronized (pfxLock) {
@@ -377,11 +363,9 @@ public class Layer implements Disposable, Savable, Listener<Layer> {
 
         shaper.setProjectionMatrix(cam.combined);
         shaper.begin(ShapeType.Filled);
-        synchronized (chunkLock) {
-            for (Chunk c : chunks) {
-                if (c.isInBounds(cam, false)) {
-                    c.drawFrameStructures(spriter, shaper, delegateBatch);
-                }
+        for (Chunk c : snapshot) {
+            if (c.isInBounds(cam, false)) {
+                c.drawFrameStructures(spriter, shaper, delegateBatch);
             }
         }
 
@@ -392,7 +376,8 @@ public class Layer implements Disposable, Savable, Listener<Layer> {
 
         if (Game.DRAW_DEBUG && !lastBounds.isEmpty()) {
             shaper.setColor(0, 0, 1, 0.2f);
-            shaper.rect(lastBounds.getX() * Const.TILE_SIZE, lastBounds.getY() * Const.TILE_SIZE, lastBounds.getWidth() * Const.TILE_SIZE, lastBounds.getHeight() * Const.TILE_SIZE);
+            shaper.rect(lastBounds.getX() * Const.TILE_SIZE, lastBounds.getY() * Const.TILE_SIZE,
+                    lastBounds.getWidth() * Const.TILE_SIZE, lastBounds.getHeight() * Const.TILE_SIZE);
         }
 
         shaper.end();
@@ -410,6 +395,16 @@ public class Layer implements Disposable, Savable, Listener<Layer> {
         }
 
         batch.begin();
+
+        if (!dirtyCopy.isEmpty() || fromLoading) {
+            synchronized (loudnessLock) {
+                updateLoudnessFlag = true;
+            }
+
+            lastBounds.set(dirtyCopy);
+            dirtyCopy.clear();
+            fromLoading = false;
+        }
     }
 
     public Chunk getChunk(int x, int y) {
@@ -505,9 +500,8 @@ public class Layer implements Disposable, Savable, Listener<Layer> {
     public boolean removeStructure(Structure<?> s) {
         Chunk c = getChunk(s.x, s.y);
         if (c == null) return false;
-        boolean res = c.removeStructure(s.x - c.ax, s.y - c.ay);
 
-        return res;
+        return c.removeStructure(s.x - c.ax, s.y - c.ay);
     }
 
     public boolean removeCable(int x, int y) {
@@ -674,7 +668,7 @@ public class Layer implements Disposable, Savable, Listener<Layer> {
 
     public synchronized TileType get(int x, int y) {
         if (x < 0 || y < 0 || x >= width || y >= height) {
-            //            System.out.println("Get out of bounds: " + x + ":" + y);
+//          Gdx.app.log("Layer.get","Get out of bounds: " + x + ":" + y);
             return TileType.Air;
         }
         Chunk c = getChunk(x, y);
@@ -732,7 +726,7 @@ public class Layer implements Disposable, Savable, Listener<Layer> {
                 meta |= TileMeta.ROT_TEX | TileMeta.ROT_TEX_90;
             }
         }
-        c.data[addr] |= meta << 8;
+        c.data[addr] |= (short) (meta << 8);
 
         c.dirty = true;
         markSurroundingTilesAsDirty(x, y);
@@ -740,7 +734,7 @@ public class Layer implements Disposable, Savable, Listener<Layer> {
 
     public synchronized void addMeta(int x, int y, int metaFlag) {
         if (x < 0 || y < 0 || x >= width || y >= height) {
-            //            System.out.println("addMeta out of bounds: " + x + ":" + y);
+//          Gdx.app.log("Layer.addMeta", "addMeta out of bounds: " + x + ":" + y);
             return;
         }
 
@@ -749,14 +743,14 @@ public class Layer implements Disposable, Savable, Listener<Layer> {
             return;
         int addr = (x - c.ax) * Const.CHUNK_SIZE + (y - c.ay);
 
-        c.data[addr] |= metaFlag << 8;
+        c.data[addr] |= (short) (metaFlag << 8);
         c.dirty = true;
         markSurroundingTilesAsDirty(x, y);
     }
 
     public synchronized void removeMeta(int x, int y, int metaFlag) {
         if (x < 0 || y < 0 || x >= width || y >= height) {
-            //            System.out.println("removeMeta out of bounds: " + x + ":" + y);
+            Gdx.app.log("Layer.removeMeta", "removeMeta out of bounds: " + x + ":" + y);
             return;
         }
 
@@ -765,7 +759,7 @@ public class Layer implements Disposable, Savable, Listener<Layer> {
             return;
         int addr = (x - c.ax) * Const.CHUNK_SIZE + (y - c.ay);
 
-        c.data[addr] &= ~(metaFlag << 8);
+        c.data[addr] &= (short) ~(metaFlag << 8);
         c.dirty = true;
         markSurroundingTilesAsDirty(x, y);
     }
@@ -875,6 +869,11 @@ public class Layer implements Disposable, Savable, Listener<Layer> {
 
     @Override
     public void dispose() {
+        if (disposed) return;
+        synchronized (this) {
+            if (disposed) return;
+            disposed = true;
+        }
         synchronized (chunkLock) {
             for (Chunk c : chunks)
                 c.dispose();
@@ -997,5 +996,4 @@ public class Layer implements Disposable, Savable, Listener<Layer> {
 
         return count;
     }
-
 }

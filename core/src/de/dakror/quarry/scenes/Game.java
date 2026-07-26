@@ -99,12 +99,16 @@ import de.dakror.quarry.util.*;
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.util.*;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.regex.Pattern;
 
 /**
  * @author Maximilian Stark | Dakror
  */
 public class Game extends GameScene {
+    private int logDelta = 0;
+
     private enum LiningUpState {
         NoOther,
         LiningUp,
@@ -1448,7 +1452,6 @@ public class Game extends GameScene {
     private static final Object layerLock = new Object();
     private static final Object resourceLock = new Object();
     private static final Object highlightLock = new Object();
-    public static final Object renderThreadLock = new Object();
 
     static final Bounds tempBounds = new Bounds();
 
@@ -1465,7 +1468,7 @@ public class Game extends GameScene {
     public GameUi ui;
     public InputMultiplexer input;
 
-    public final Array<Runnable> renderThreadTasks = new Array<>();
+    public final Queue<Runnable> renderThreadTasks = new ConcurrentLinkedQueue<>();
 
     public Viewport viewport;
     // Player stuff
@@ -1922,16 +1925,16 @@ public class Game extends GameScene {
                 && !ui.menu.menuButton.isChecked()) {
             if (!SMOOTH_CAMERA) {
                 if (Gdx.input.isKeyPressed(Keys.A) || Gdx.input.isKeyPressed(Keys.LEFT)) {
-                    cam.position.x -= 700 * cam.zoom * deltaTime;
+                    cam.position.x -= (float) (700 * cam.zoom * deltaTime);
                 }
                 if (Gdx.input.isKeyPressed(Keys.D) || Gdx.input.isKeyPressed(Keys.RIGHT)) {
-                    cam.position.x += 700 * cam.zoom * deltaTime;
+                    cam.position.x += (float) (700 * cam.zoom * deltaTime);
                 }
                 if (Gdx.input.isKeyPressed(Keys.W) || Gdx.input.isKeyPressed(Keys.UP)) {
-                    cam.position.y += 700 * cam.zoom * deltaTime;
+                    cam.position.y += (float) (700 * cam.zoom * deltaTime);
                 }
                 if (Gdx.input.isKeyPressed(Keys.S) || Gdx.input.isKeyPressed(Keys.DOWN)) {
-                    cam.position.y -= 700 * cam.zoom * deltaTime;
+                    cam.position.y -= (float) (700 * cam.zoom * deltaTime);
                 }
             } else {
                 cam.position.add(tmp3.set(cameraVelocity.x, cameraVelocity.y, 0).scl((float) deltaTime));
@@ -1948,8 +1951,8 @@ public class Game extends GameScene {
                     if (Math.abs(cameraVelocity.x) < 1f) {
                         cameraVelocity.x = 0;
                     } else {
-                        cameraVelocity.x += Math.min(cameraAcc * deltaTime * cam.zoom, Math.abs(cameraVelocity.x))
-                                * -Math.signum(cameraVelocity.x);
+                        cameraVelocity.x += (float) (Math.min(cameraAcc * deltaTime * cam.zoom, Math.abs(cameraVelocity.x))
+                                * -Math.signum(cameraVelocity.x));
                     }
                 }
 
@@ -1963,19 +1966,19 @@ public class Game extends GameScene {
                     if (Math.abs(cameraVelocity.y) < 1f) {
                         cameraVelocity.y = 0;
                     } else {
-                        cameraVelocity.y += Math.min(cameraAcc * deltaTime * cam.zoom, Math.abs(cameraVelocity.y))
-                                * -Math.signum(cameraVelocity.y);
+                        cameraVelocity.y += (float) (Math.min(cameraAcc * deltaTime * cam.zoom, Math.abs(cameraVelocity.y))
+                                * -Math.signum(cameraVelocity.y));
                     }
                 }
 
                 if (Math.abs(cameraZoomAcc) < 0.00001f)
                     cameraZoomAcc = 0;
                 else
-                    cameraZoomAcc += Math.min(Math.abs(cameraZoomAcc), 20 * deltaTime) * -Math.signum(cameraZoomAcc);
-                cameraVelocity.z += cameraZoomAcc * deltaTime * 0.001f;
+                    cameraZoomAcc += (float) (Math.min(Math.abs(cameraZoomAcc), 20 * deltaTime) * -Math.signum(cameraZoomAcc));
+                cameraVelocity.z += (float) (cameraZoomAcc * deltaTime * 0.001f);
                 if (cameraZoomAcc == 0) {
-                    cameraVelocity.z += Math.min(Math.abs(cameraVelocity.z), 0.02f * deltaTime)
-                            * -Math.signum(cameraVelocity.z);
+                    cameraVelocity.z += (float) (Math.min(Math.abs(cameraVelocity.z), 0.02f * deltaTime)
+                            * -Math.signum(cameraVelocity.z));
                 }
             }
         }
@@ -2040,9 +2043,15 @@ public class Game extends GameScene {
             saveMap = true;
         }
 
-        //        System.out.println("FPS: " + (int) (1 / Gdx.graphics.getRawDeltaTime() * 10) / 10f);
-        //        System.out.println("B: " + layer.getStructureCount());
-        //        System.out.println("I: " + layer.getEntityCount());
+        if (logDelta >= (int) (1 / Gdx.graphics.getDeltaTime() * 10)) {
+            Gdx.app.log("Game", "---Update Report---");
+            Gdx.app.log("Game", "FPS: " + (int) (1 / Gdx.graphics.getDeltaTime() * 10) / 10f);
+            Gdx.app.log("Game", "BDS: " + layer.getStructureCount());
+            Gdx.app.log("Game", "ITS: " + layer.getItemCount());
+            Gdx.app.log("Game", "-------------------");
+            logDelta = 0;
+        } else
+            logDelta++;
     }
 
     private void takeScreenShot(final boolean record) {
@@ -2814,9 +2823,9 @@ public class Game extends GameScene {
             }
         }
 
-        synchronized (renderThreadLock) {
-            if (renderThreadTasks.size > 0)
-                renderThreadTasks.removeIndex(0).run();
+        Runnable task;
+        while ((task = renderThreadTasks.poll()) != null) {
+            task.run();
         }
     }
 
@@ -3140,9 +3149,7 @@ public class Game extends GameScene {
     public synchronized int getResource(ItemType item) {
         synchronized (resourceLock) {
             Integer val = resources.get(item);
-            if (val == null)
-                return 0;
-            return val;
+            return val == null ? 0 : val;
         }
     }
 

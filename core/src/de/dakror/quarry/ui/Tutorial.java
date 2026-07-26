@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2018 Maximilian Stark | Dakror <mail@dakror.de>
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -62,7 +62,8 @@ public class Tutorial {
             this.modal = modal;
         }
 
-        public void onShow(Window w) {}
+        public void onShow(Window w) {
+        }
 
         public boolean isDone() {
             return false;
@@ -106,8 +107,7 @@ public class Tutorial {
                 Step step = getStep();
                 if (step == null) return;
 
-                if (step.tappable && event.getStageX() >= step.x && event.getStageX() <= step.x + step.width
-                        && event.getStageY() >= step.y && event.getStageY() <= step.y + step.height) {
+                if (step.tappable && event.getStageX() >= step.x && event.getStageX() <= step.x + step.width && event.getStageY() >= step.y && event.getStageY() <= step.y + step.height) {
                     Quarry.Q.sound.play(Quarry.Q.clickSfx);
                     next();
                 }
@@ -161,12 +161,11 @@ public class Tutorial {
         // GOOD SEED 
         // 5044591726400517120
 
-        int[][] heights = { { 400, 480 }, { 330, 330 }, { 250, 330 }, { 230, 300 }, { 370, 370 }, { 380, 400 }, {},
-                { 300, 270 }, { 430, 520 }, { 330, 330 }, { 300, 300 }, { 440, 480 }, { 440, 440 }, { 440, 440 } };
+        int[][] heights = {{400, 480}, {330, 330}, {250, 330}, {230, 300}, {370, 370}, {380, 400}, {}, {300, 270}, {430, 520}, {330, 330}, {300, 300}, {440, 480}, {440, 440}, {440, 440}};
 
-        int l = Quarry.Q.i18n.getLocale().getLanguage().equals(new Locale("de").getLanguage()) ? 1 : 0;
+        int lang = Quarry.Q.i18n.getLocale().getLanguage().equals(new Locale("zh").getLanguage()) ? 1 : 0;
 
-        steps.add(new Step((Const.UI_W - 600) / 2, (Const.UI_H - heights[0][l]) / 2, 600, heights[0][l], true, true) {
+        steps.add(new Step((Const.UI_W - 600) / 2, (Const.UI_H - heights[0][lang]) / 2, 600, heights[0][lang], true, true) {
             @Override
             public void onShow(Window w) {
                 super.onShow(w);
@@ -175,28 +174,28 @@ public class Tutorial {
                 Game.G.ui.destroyButton.setVisible(false);
             }
         });
-        steps.add(new Step(0, 0, Const.UI_W, heights[1][l], true, true));
-        steps.add(new Step(0, 0, Const.UI_W, heights[2][l], false, false) {
+        steps.add(new Step(0, 0, Const.UI_W, heights[1][lang], true, true));
+        steps.add(new Step(0, 0, Const.UI_W, heights[2][lang], false, false) {
             @Override
             public boolean isDone() {
                 return Game.G.getZoom() >= ((Const.DEFAULT_LAYER_SIZE - 2) * Const.TILE_SIZE) / Const.W;
             }
         });
-        steps.add(new Step(0, 0, Const.UI_W, heights[3][l], false, false) {
+        steps.add(new Step(0, 0, Const.UI_W, heights[3][lang], false, false) {
             @Override
             public boolean isDone() {
                 return true;
             }
         });
-        //        steps.add(new Step(0, 0, Const.UI_W, heights[3][l], true, true));
-        steps.add(new Step(0, Const.UI_H - heights[4][l], Const.UI_W - 150, heights[4][l], true, true));
-        steps.add(new Step(250, Const.UI_H - heights[5][l], Const.UI_W - 250, heights[5][l], true, true));
+        //        steps.add(new Step(0, 0, Const.UI_W, heights[3][lang], true, true));
+        steps.add(new Step(0, Const.UI_H - heights[4][lang], Const.UI_W - 150, heights[4][lang], true, true));
+        steps.add(new Step(250, Const.UI_H - heights[5][lang], Const.UI_W - 250, heights[5][lang], true, true));
         steps.add(new Step(0, 0, 0, 0, false, true) {
             CameraAction action;
 
             @Override
             public void onShow(Window w) {
-                action = new CameraAction(0.5f, new Vector3((Game.G.layer.width + 0.75f) * Const.TILE_SIZE / 2, (Game.G.layer.height - 7) * Const.TILE_SIZE / 2, 0), 0.75f, Game.G.getCamera());
+                action = new CameraAction(0.5f, new Vector3((Game.G.layer.width + 0.75f) * Const.TILE_SIZE / 2, (float) ((Game.G.layer.height - 7) * Const.TILE_SIZE) / 2, 0), 0.75f, Game.G.getCamera());
                 win.addAction(action);
             }
 
@@ -205,24 +204,24 @@ public class Tutorial {
                 return action.isDone();
             }
         });
-        steps.add(new Step(0, 450, Const.UI_W, heights[7][l], false, false) {
+        steps.add(new Step(0, 450, Const.UI_W, heights[7][lang], false, false) {
             @Override
             public boolean isDone() {
                 return Game.G.ui.tooltipCurrentStructure instanceof Mine;
             }
         });
-        steps.add(new Step(0, 450, Const.UI_W, heights[8][l], false, false) {
+        steps.add(new Step(0, 450, Const.UI_W, heights[8][lang], false, false) {
             @Override
             public boolean isDone() {
                 return Game.G.activeStructure instanceof Mine;
             }
         });
-        steps.add(new Step(0, 120, Const.UI_W, heights[9][l], false, false) {
+        steps.add(new Step(0, 120, Const.UI_W, heights[9][lang], false, false) {
             CameraAction action;
 
             @Override
             public void onShow(Window w) {
-                action = new CameraAction(0.5f, new Vector3((Game.G.layer.width + 0.75f) * Const.TILE_SIZE / 2, (Game.G.layer.height - 14) * Const.TILE_SIZE / 2, 0), 0.75f, Game.G.getCamera());
+                action = new CameraAction(0.5f, new Vector3((Game.G.layer.width + 0.75f) * Const.TILE_SIZE / 2, (float) ((Game.G.layer.height - 14) * Const.TILE_SIZE) / 2, 0), 0.75f, Game.G.getCamera());
                 win.addAction(action);
                 Game.G.highlightArea(2009, 2010, 2073, 2074);
             }
@@ -232,7 +231,7 @@ public class Tutorial {
                 return action.isDone() && Game.G.getTutorialHighlight().size == 0;
             }
         });
-        steps.add(new Step(0, 120, Const.UI_W, heights[10][l], false, false) {
+        steps.add(new Step(0, 120, Const.UI_W, heights[10][lang], false, false) {
             @Override
             public void onShow(Window w) {
                 Game.G.resetActiveStructure();
@@ -244,7 +243,7 @@ public class Tutorial {
                 return Game.G.activeStructure != null && Game.G.activeStructure.getSchema().type == StructureType.Conveyor;
             }
         });
-        steps.add(new Step(0, 120, Const.UI_W, heights[11][l], false, false) {
+        steps.add(new Step(0, 120, Const.UI_W, heights[11][lang], false, false) {
             @Override
             public void onShow(Window w) {
                 Game.G.highlightArea(2011, 2012, 2013, 2014);
@@ -255,21 +254,16 @@ public class Tutorial {
                 return Game.G.getTutorialHighlight().size == 0;
             }
         });
-        steps.add(new Step(0, Const.UI_H - heights[12][l], Const.UI_W, heights[12][l], false, false) {
+        steps.add(new Step(0, Const.UI_H - heights[12][lang], Const.UI_W, heights[12][lang], false, false) {
             boolean hasBamboozled = false;
 
             @Override
             public void onShow(Window w) {
-                synchronized (Game.renderThreadLock) {
-                    Game.G.renderThreadTasks.add(new Runnable() {
-                        @Override
-                        public void run() {
-                            Conveyor c = (Conveyor) Game.G.layer.getStructure(2012);
-                            c.setRotation(Direction.East);
-                            hasBamboozled = true;
-                        }
-                    });
-                }
+                Game.G.renderThreadTasks.add(() -> {
+                    Conveyor c = (Conveyor) Game.G.layer.getStructure(2012);
+                    c.setRotation(Direction.East);
+                    hasBamboozled = true;
+                });
             }
 
             @Override
@@ -277,8 +271,7 @@ public class Tutorial {
                 if (!hasBamboozled) return false;
 
                 for (int i = 2011; i <= 2014; i++) {
-                    if (Game.G.layer.getStructure(i) == null
-                            || ((Conveyor) Game.G.layer.getStructure(i)).getDirection() != Direction.North) {
+                    if (Game.G.layer.getStructure(i) == null || ((Conveyor) Game.G.layer.getStructure(i)).getDirection() != Direction.North) {
                         return false;
                     }
                 }
@@ -286,7 +279,7 @@ public class Tutorial {
                 return true;
             }
         });
-        steps.add(new Step(0, Const.UI_H - heights[13][l], Const.UI_W - 150, heights[13][l], true, true) {
+        steps.add(new Step(0, Const.UI_H - heights[13][lang], Const.UI_W - 150, heights[13][lang], true, true) {
             @Override
             public void onShow(Window w) {
                 super.onShow(w);
@@ -349,17 +342,15 @@ public class Tutorial {
         // clamp to insets
         if (step.x < Quarry.Q.safeInsets[0]) step.x = Quarry.Q.safeInsets[0];
         if (step.y < Quarry.Q.safeInsets[3]) step.y = Quarry.Q.safeInsets[3];
-        if (step.y + step.height >= Const.UI_H - Quarry.Q.safeInsets[1]) step.y = Const.UI_H - Quarry.Q.safeInsets[1] - step.height;
-        if (step.x + step.width >= Const.UI_W - Quarry.Q.safeInsets[2]) step.x = Const.UI_W - Quarry.Q.safeInsets[2] - step.width;
+        if (step.y + step.height >= Const.UI_H - Quarry.Q.safeInsets[1])
+            step.y = Const.UI_H - Quarry.Q.safeInsets[1] - step.height;
+        if (step.x + step.width >= Const.UI_W - Quarry.Q.safeInsets[2])
+            step.x = Const.UI_W - Quarry.Q.safeInsets[2] - step.width;
 
         if (stepNum == 0) {
-            win.addAction(sequence(alpha(0), moveTo(step.x, step.y),
-                    sizeTo(step.width, step.height), visible(true), fadeIn(0.15f)));
+            win.addAction(sequence(alpha(0), moveTo(step.x, step.y), sizeTo(step.width, step.height), visible(true), fadeIn(0.15f)));
         } else if (step.width > 0) {
-            win.addAction(sequence(parallel(alpha(0.4f, durationA), sizeTo(100, 100, durationA, interpA),
-                    moveTo(win.getX() + old.width / 2 - 50, win.getY() + old.height / 2 - 50, durationA, interpA)),
-                    parallel(fadeIn(durationB), moveTo(step.x, step.y, durationB, interpB),
-                            sizeTo(step.width, step.height, durationB, interpB))));
+            win.addAction(sequence(parallel(alpha(0.4f, durationA), sizeTo(100, 100, durationA, interpA), moveTo(win.getX() + old.width / 2 - 50, win.getY() + old.height / 2 - 50, durationA, interpA)), parallel(fadeIn(durationB), moveTo(step.x, step.y, durationB, interpB), sizeTo(step.width, step.height, durationB, interpB))));
         } else {
             win.addAction(alpha(0));
         }
@@ -370,8 +361,7 @@ public class Tutorial {
         if (step.tappable) {
             indicatorAction.y = step.y + 30;
             indicator.addAction(indicatorAction);
-            indicator.addAction(sequence(delay(1), alpha(0), visible(true),
-                    moveTo(step.x + step.width - 50, indicatorAction.y), fadeIn(0.1f)));
+            indicator.addAction(sequence(delay(1), alpha(0), visible(true), moveTo(step.x + step.width - 50, indicatorAction.y), fadeIn(0.1f)));
             indicator.toFront();
         }
 
