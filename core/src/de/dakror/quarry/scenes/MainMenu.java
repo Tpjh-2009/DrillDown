@@ -58,7 +58,6 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
 import de.dakror.common.Callback;
-import de.dakror.common.Response;
 import de.dakror.common.libgdx.PlatformInterface;
 import de.dakror.common.libgdx.io.NBT;
 import de.dakror.common.libgdx.io.NBT.CompoundTag;
@@ -175,14 +174,14 @@ public class MainMenu extends Scene implements Ui {
         seedPrompt = Util.lml("seed-prompt");
         stage.addActor(toast);
 
-        final ImageButton de = Util.id("lang");
-        de.setChecked(Quarry.Q.i18n.getLocale().getLanguage().equals("en"));
-        de.addListener(new ClickListener() {
+        final ImageButton Eng = Util.id("lang");
+        Eng.setChecked(Quarry.Q.i18n.getLocale().getLanguage().equals("zh"));
+        Eng.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 Quarry.Q.sound.play(Quarry.Q.clickSfx);
                 alert.show(MainMenu.this, Quarry.Q.i18n.get("alert.language_change"), data -> {});
-                Quarry.Q.prefs.putBoolean("chinese", !de.isChecked()).flush();
+                Quarry.Q.prefs.putBoolean("English", !Eng.isChecked()).flush();
             }
         });
 
