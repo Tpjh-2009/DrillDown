@@ -40,7 +40,7 @@ public class CharcoalMound extends ProducerStructure {
             new RecipeList() {
                 @Override
                 protected void init() {
-                    add(new Recipe(240f, "charcoal")
+                    add(new Recipe(180f, "charcoal")
                             .input(new Amount(ItemType.Wood, 5), new Amount(ItemType.Dirt, 15))
                             .output(new Amount(ItemType.Charcoal, 24)));
                 }
