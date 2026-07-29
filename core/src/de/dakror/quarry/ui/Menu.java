@@ -377,15 +377,15 @@ public class Menu {
             }
         });
 
-        final ImageButton de = Util.id("lang");
-        de.setChecked(Quarry.Q.i18n.getLocale().getLanguage().equals("en"));
-        de.addListener(new ClickListener() {
+        final ImageButton Eng = Util.id("lang");
+        Eng.setChecked(Quarry.Q.i18n.getLocale().getLanguage().equals("zh"));
+        Eng.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 Quarry.Q.sound.play(Quarry.Q.clickSfx);
                 Game.G.ui.alert.show(Game.G.ui, Quarry.Q.i18n.get("alert.language_change"), data -> {
                 });
-                Quarry.Q.prefs.putBoolean("chinese", !de.isChecked()).flush();
+                Quarry.Q.prefs.putBoolean("English", !Eng.isChecked()).flush();
             }
         });
 
