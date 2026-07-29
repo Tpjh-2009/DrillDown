@@ -16,20 +16,6 @@
 
 package de.dakror.quarry.scenes;
 
-import static com.badlogic.gdx.scenes.scene2d.actions.Actions.*;
-
-import java.text.DateFormat;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.EnumMap;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -37,42 +23,20 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.*;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
-import com.badlogic.gdx.scenes.scene2d.Group;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.InputListener;
-import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
-import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.ui.Button.ButtonStyle;
-import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
-import com.badlogic.gdx.scenes.scene2d.ui.Cell;
-import com.badlogic.gdx.scenes.scene2d.ui.HorizontalGroup;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane.ScrollPaneStyle;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
-import com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup;
-import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.ui.modified.TextTooltip;
 import com.badlogic.gdx.scenes.scene2d.ui.modified.TooltipManager;
-import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
-import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
-import com.badlogic.gdx.scenes.scene2d.utils.TiledDrawable;
+import com.badlogic.gdx.scenes.scene2d.utils.*;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-
 import de.dakror.common.BiCallback;
 import de.dakror.common.libgdx.PlatformInterface;
 import de.dakror.quarry.Const;
@@ -84,116 +48,32 @@ import de.dakror.quarry.game.Item.ItemType;
 import de.dakror.quarry.game.Item.Items;
 import de.dakror.quarry.game.Item.Items.Amount;
 import de.dakror.quarry.game.Science.ScienceType;
-import de.dakror.quarry.structure.Boiler;
-import de.dakror.quarry.structure.Booster;
-import de.dakror.quarry.structure.DistillationColumn;
-import de.dakror.quarry.structure.Refinery;
-import de.dakror.quarry.structure.ScienceLab;
-import de.dakror.quarry.structure.ShaftDrill;
-import de.dakror.quarry.structure.ShaftDrillHead;
-import de.dakror.quarry.structure.base.Direction;
-import de.dakror.quarry.structure.base.Dock;
+import de.dakror.quarry.structure.*;
+import de.dakror.quarry.structure.base.*;
 import de.dakror.quarry.structure.base.Dock.DockType;
-import de.dakror.quarry.structure.base.GeneratorStructure;
 import de.dakror.quarry.structure.base.GeneratorStructure.GeneratorRecipe;
-import de.dakror.quarry.structure.base.IFlippable;
-import de.dakror.quarry.structure.base.IRotatable;
-import de.dakror.quarry.structure.base.ProducerStructure;
 import de.dakror.quarry.structure.base.ProducerStructure.ProducerSchema;
 import de.dakror.quarry.structure.base.RecipeList.Recipe;
 import de.dakror.quarry.structure.base.Schema.ButtonDef;
 import de.dakror.quarry.structure.base.Schema.ButtonDef.ButtonType;
 import de.dakror.quarry.structure.base.Schema.Flags;
-import de.dakror.quarry.structure.base.Structure;
-import de.dakror.quarry.structure.base.StructureType;
 import de.dakror.quarry.structure.base.component.CRecipeSlotStorage;
 import de.dakror.quarry.structure.base.component.CTank;
 import de.dakror.quarry.structure.base.component.Component;
 import de.dakror.quarry.structure.base.component.IStorage;
-import de.dakror.quarry.structure.logistics.BrickChannel;
-import de.dakror.quarry.structure.logistics.Conveyor;
-import de.dakror.quarry.structure.logistics.ConveyorBridge;
-import de.dakror.quarry.structure.logistics.CopperTube;
-import de.dakror.quarry.structure.logistics.Distributor;
-import de.dakror.quarry.structure.logistics.ElectricConveyor;
-import de.dakror.quarry.structure.logistics.ElectricConveyorCore;
-import de.dakror.quarry.structure.logistics.Filter;
-import de.dakror.quarry.structure.logistics.Hopper;
-import de.dakror.quarry.structure.logistics.ItemLift;
-import de.dakror.quarry.structure.logistics.SteelTube;
-import de.dakror.quarry.structure.logistics.TubeShaft;
-import de.dakror.quarry.structure.logistics.VacuumPump;
-import de.dakror.quarry.structure.logistics.Valve;
-import de.dakror.quarry.structure.power.AnchorPortal;
-import de.dakror.quarry.structure.power.CableShaft;
-import de.dakror.quarry.structure.power.Capacitor;
-import de.dakror.quarry.structure.power.CopperCable;
-import de.dakror.quarry.structure.power.GasTurbine;
-import de.dakror.quarry.structure.power.HighPowerShaft;
-import de.dakror.quarry.structure.power.PowerPole;
-import de.dakror.quarry.structure.power.SolarPanel;
-import de.dakror.quarry.structure.power.SolarPanelOutlet;
-import de.dakror.quarry.structure.power.SteamTurbine;
-import de.dakror.quarry.structure.power.Substation;
-import de.dakror.quarry.structure.power.SuperCapacitor;
-import de.dakror.quarry.structure.power.WaterWheel;
-import de.dakror.quarry.structure.producer.AirPurifier;
-import de.dakror.quarry.structure.producer.ArcWelder;
-import de.dakror.quarry.structure.producer.Assembler;
-import de.dakror.quarry.structure.producer.BallMill;
-import de.dakror.quarry.structure.producer.BarrelDrainer;
-import de.dakror.quarry.structure.producer.BlastFurnace;
-import de.dakror.quarry.structure.producer.Carpenter;
-import de.dakror.quarry.structure.producer.Centrifuge;
-import de.dakror.quarry.structure.producer.CharcoalMound;
-import de.dakror.quarry.structure.producer.Compactor;
-import de.dakror.quarry.structure.producer.Condenser;
-import de.dakror.quarry.structure.producer.Crucible;
-import de.dakror.quarry.structure.producer.DeviceFabricator;
-import de.dakror.quarry.structure.producer.Excavator;
-import de.dakror.quarry.structure.producer.FillingMachine;
-import de.dakror.quarry.structure.producer.Furnace;
-import de.dakror.quarry.structure.producer.GroundwaterPump;
-import de.dakror.quarry.structure.producer.InductionFurnace;
-import de.dakror.quarry.structure.producer.IngotMold;
-import de.dakror.quarry.structure.producer.InjectionMolder;
-import de.dakror.quarry.structure.producer.Kiln;
-import de.dakror.quarry.structure.producer.Lumberjack;
-import de.dakror.quarry.structure.producer.Mason;
-import de.dakror.quarry.structure.producer.Mine;
-import de.dakror.quarry.structure.producer.Mixer;
-import de.dakror.quarry.structure.producer.OilWell;
-import de.dakror.quarry.structure.producer.Polarizer;
-import de.dakror.quarry.structure.producer.Polymerizer;
-import de.dakror.quarry.structure.producer.RockCrusher;
-import de.dakror.quarry.structure.producer.RollingMachine;
-import de.dakror.quarry.structure.producer.SawMill;
-import de.dakror.quarry.structure.producer.Stacker;
-import de.dakror.quarry.structure.producer.TubeBender;
-import de.dakror.quarry.structure.producer.WireDrawer;
-import de.dakror.quarry.structure.storage.Barrel;
-import de.dakror.quarry.structure.storage.DigitalStorage;
-import de.dakror.quarry.structure.storage.Silo;
-import de.dakror.quarry.structure.storage.Storage;
-import de.dakror.quarry.structure.storage.Tank;
-import de.dakror.quarry.structure.storage.Warehouse;
-import de.dakror.quarry.ui.Alert;
-import de.dakror.quarry.ui.BoilerRecipe;
-import de.dakror.quarry.ui.Confirm;
-import de.dakror.quarry.ui.DistillationRecipe;
-import de.dakror.quarry.ui.EndOfGame;
-import de.dakror.quarry.ui.ItemSelection;
-import de.dakror.quarry.ui.LayerSelection;
-import de.dakror.quarry.ui.Menu;
-import de.dakror.quarry.ui.Prompt;
-import de.dakror.quarry.ui.RefineryRecipe;
-import de.dakror.quarry.ui.SeedPrompt;
-import de.dakror.quarry.ui.TileUI;
-import de.dakror.quarry.ui.Toast;
-import de.dakror.quarry.ui.Tutorial;
-import de.dakror.quarry.ui.Ui;
-import de.dakror.quarry.ui.Upgrade;
+import de.dakror.quarry.structure.logistics.*;
+import de.dakror.quarry.structure.power.*;
+import de.dakror.quarry.structure.producer.*;
+import de.dakror.quarry.structure.storage.*;
+import de.dakror.quarry.ui.*;
 import de.dakror.quarry.util.Util;
+
+import java.text.DateFormat;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.*;
+
+import static com.badlogic.gdx.scenes.scene2d.actions.Actions.*;
 
 /**
  * @author Maximilian Stark | Dakror
@@ -223,12 +103,17 @@ public class GameUi implements Ui {
     VerticalGroup[] buildCategories;
     ButtonGroup<Button> buildTabButtons;
     ButtonGroup<Button>[] buildCategoryButtons;
-    ScrollPane buildScrollPane;
-    HorizontalGroup buildTabs;
+    VerticalGroup buildTabs;
+    ScrollPane buildItemScrollPane;
+    Table buildMainContainer;
+    float tabHeight;
+    float buttonHeight;
+    float buttonWidth;
     ButtonStyle menuButtonStyle;
-    ImageButton buildClose, buildBack;
-    Array<Actor> buildMenuStars = new Array<>();
+    ImageButton buildClose;
     public EnumSet<ScienceType> buildMenuSciences = EnumSet.noneOf(ScienceType.class);
+    Array<Actor> buildMenuStars = new Array<>();
+    Set<Object> readStars = new HashSet<>();
 
     // Science menu
     VerticalGroup scienceMenu;
@@ -295,6 +180,20 @@ public class GameUi implements Ui {
 
     public static final Drawable trButton = Quarry.Q.skin.newDrawable("button", 1, 1, 1, 0.25f);
 
+    private ArrayList<CategoryInfo> categoryInfos = new ArrayList<>();
+
+    private static class CategoryInfo {
+        Drawable icon;
+        String title;
+        int index;  // 对应 buildCategories 的索引
+
+        CategoryInfo(Drawable icon, String title, int index) {
+            this.icon = icon;
+            this.title = title;
+            this.index = index;
+        }
+    }
+
     public GameUi(Viewport viewport) {
         Batch batch = null;
         //        try {
@@ -318,8 +217,7 @@ public class GameUi implements Ui {
 
             @Override
             public void addActor(Actor actor) {
-                if (actor.getName() != null && !actor.getName().equals("menu"))
-                    clampToInsets(actor);
+                if (actor.getName() != null && !actor.getName().equals("menu")) clampToInsets(actor);
                 super.addActor(actor);
             }
         };
@@ -328,11 +226,10 @@ public class GameUi implements Ui {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 TooltipManager.getInstance().hideAll();
-                if (buildScrollPane.isVisible() && stage.hit(x, y, true) == null) {
+                if (buildMainContainer.isVisible() && stage.hit(x, y, true) == null) {
                     Game.G.resetActiveStructure();
                     hideTooltip();
                     hideBuildMenu();
-
                     return true;
                 } else if (scienceScrollPane.isVisible() && stage.hit(x, y, true) == null) {
                     hideScienceUI();
@@ -375,10 +272,12 @@ public class GameUi implements Ui {
     }
 
     public void clampToInsets(Actor actor) {
-        if (actor.getX() < Quarry.Q.safeInsets[0])
-            actor.setX(Quarry.Q.safeInsets[0]);
-        if (actor.getY() < Quarry.Q.safeInsets[3])
-            actor.setY(Quarry.Q.safeInsets[3]);
+        if (actor == buildMainContainer || actor == buildClose) {
+            Gdx.app.log("clamp", actor.getX() + "");
+            return;
+        }
+        if (actor.getX() < Quarry.Q.safeInsets[0]) actor.setX(Quarry.Q.safeInsets[0]);
+        if (actor.getY() < Quarry.Q.safeInsets[3]) actor.setY(Quarry.Q.safeInsets[3]);
         if (actor.getY() + actor.getHeight() >= Const.UI_H - Quarry.Q.safeInsets[1])
             actor.setY(Const.UI_H - Quarry.Q.safeInsets[1] - actor.getHeight());
         if (actor.getX() + actor.getWidth() >= Const.UI_W - Quarry.Q.safeInsets[2])
@@ -501,25 +400,10 @@ public class GameUi implements Ui {
             public void changed(ChangeEvent event, Actor actor) {
                 if (destroyButton.isChecked()) {
                     if (Game.G.hasScience(ScienceType.Electricity) || Game.GOD_MODE) {
-                        cableRemoveButton.addAction(sequence(
-                                alpha(0),
-                                visible(true),
-                                moveTo(destroyButton.getX(), destroyButton.getY()),
-                                parallel(
-                                        fadeIn(0.1f),
-                                        moveBy(Const.BUILD_RING_ITEM_SIZE + 20, 0, 0.15f, Interpolation.swingOut))));
-                        bulkCableButton.addAction(sequence(
-                                alpha(0),
-                                visible(true),
-                                moveTo(destroyButton.getX(), destroyButton.getY()),
-                                parallel(
-                                        fadeIn(0.1f),
-                                        moveBy(Const.BUILD_RING_ITEM_SIZE + 20, Const.BUILD_RING_ITEM_SIZE + 20, 0.15f,
-                                                Interpolation.swingOut))));
+                        cableRemoveButton.addAction(sequence(alpha(0), visible(true), moveTo(destroyButton.getX(), destroyButton.getY()), parallel(fadeIn(0.1f), moveBy(Const.BUILD_RING_ITEM_SIZE + 20, 0, 0.15f, Interpolation.swingOut))));
+                        bulkCableButton.addAction(sequence(alpha(0), visible(true), moveTo(destroyButton.getX(), destroyButton.getY()), parallel(fadeIn(0.1f), moveBy(Const.BUILD_RING_ITEM_SIZE + 20, Const.BUILD_RING_ITEM_SIZE + 20, 0.15f, Interpolation.swingOut))));
                     }
-                    bulkButton.addAction(sequence(alpha(0), visible(true),
-                            moveTo(destroyButton.getX(), destroyButton.getY()), parallel(fadeIn(0.1f),
-                                    moveBy(0, Const.BUILD_RING_ITEM_SIZE + 20, 0.15f, Interpolation.swingOut))));
+                    bulkButton.addAction(sequence(alpha(0), visible(true), moveTo(destroyButton.getX(), destroyButton.getY()), parallel(fadeIn(0.1f), moveBy(0, Const.BUILD_RING_ITEM_SIZE + 20, 0.15f, Interpolation.swingOut))));
                     hideStructureUI();
                     hideTooltip();
                     hideCopyTable();
@@ -528,19 +412,12 @@ public class GameUi implements Ui {
                     hideBuildMenu();
                 } else {
                     if (Game.G.hasScience(ScienceType.Electricity) || Game.GOD_MODE) {
-                        cableRemoveButton.addAction(sequence(parallel(fadeOut(0.1f),
-                                moveTo(destroyButton.getX(), destroyButton.getY(), 0.15f, Interpolation.swingOut)),
-                                visible(false)));
+                        cableRemoveButton.addAction(sequence(parallel(fadeOut(0.1f), moveTo(destroyButton.getX(), destroyButton.getY(), 0.15f, Interpolation.swingOut)), visible(false)));
                         cableRemoveButton.setChecked(false);
-                        bulkCableButton.addAction(sequence(parallel(fadeOut(0.1f),
-                                moveTo(destroyButton.getX(), destroyButton.getY(), 0.15f, Interpolation.swingOut)),
-                                visible(false)));
+                        bulkCableButton.addAction(sequence(parallel(fadeOut(0.1f), moveTo(destroyButton.getX(), destroyButton.getY(), 0.15f, Interpolation.swingOut)), visible(false)));
                         bulkCableButton.setChecked(false);
                     }
-                    bulkButton.addAction(sequence(
-                            parallel(fadeOut(0.1f),
-                                    moveTo(destroyButton.getX(), destroyButton.getY(), 0.15f, Interpolation.swingOut)),
-                            visible(false)));
+                    bulkButton.addAction(sequence(parallel(fadeOut(0.1f), moveTo(destroyButton.getX(), destroyButton.getY(), 0.15f, Interpolation.swingOut)), visible(false)));
                     bulkButton.setChecked(false);
                 }
                 Game.G.resetActiveStructure();
@@ -768,13 +645,18 @@ public class GameUi implements Ui {
 
     @SuppressWarnings("unchecked")
     protected void initBuildMenu(Skin skin) {
+        buildTabs = new VerticalGroup();
+        buildTabs.top().left().grow();
+
+        float totalTabHeight = Const.UI_H - 575 - Quarry.Q.safeInsets[1] - Quarry.Q.safeInsets[3];
+        tabHeight = (totalTabHeight - 20) / 5f;
+        buttonWidth = 200;
+        buttonHeight = tabHeight - 6;
+
         menuButtonStyle = new ButtonStyle(null, trButton, trButton);
 
-        buildTabs = new HorizontalGroup();
-        buildTabs.wrap(true).top().left().rowAlign(Align.topLeft);
-        buildTabs.setSize(600, Const.UI_H - 575 - Quarry.Q.safeInsets[1] - Quarry.Q.safeInsets[3]);
-
         buildTabButtons = new ButtonGroup<>();
+        buildTabButtons.setMinCheckCount(0);
 
         int tube = buildMenuTab(Conveyor.classSchema.icon, Quarry.Q.i18n.get("tab.conveyors"));
         int rout = buildMenuTab(Filter.classSchema.icon, Quarry.Q.i18n.get("tab.routers"));
@@ -786,16 +668,29 @@ public class GameUi implements Ui {
         int wate = buildMenuTab(skin.getDrawable("icon_liquids"), Quarry.Q.i18n.get("tab.water"));
         int powe = buildMenuTab(skin.getDrawable("icon_power"), Quarry.Q.i18n.get("tab.power"));
         int high = buildMenuTab(Polymerizer.classSchema.icon, Quarry.Q.i18n.get("tab.hightech"));
+        int mods = buildMenuTab(skin.getDrawable("icon_fe_ingot"), Quarry.Q.i18n.get("tab.mods"));
 
-        buildCategories = new VerticalGroup[buildTabs.getChildren().size];
-        buildCategoryButtons = new ButtonGroup[buildTabs.getChildren().size];
+        categoryInfos.clear();
+        categoryInfos.add(new CategoryInfo(Conveyor.classSchema.icon, Quarry.Q.i18n.get("tab.conveyors"), tube));
+        categoryInfos.add(new CategoryInfo(Filter.classSchema.icon, Quarry.Q.i18n.get("tab.routers"), rout));
+        categoryInfos.add(new CategoryInfo(Storage.classSchema.icon, Quarry.Q.i18n.get("tab.storage"), stor));
+        categoryInfos.add(new CategoryInfo(Mine.classSchema.icon, Quarry.Q.i18n.get("tab.raw"), mine));
+        categoryInfos.add(new CategoryInfo(Furnace.classSchema.icon, Quarry.Q.i18n.get("tab.ore"), furn));
+        categoryInfos.add(new CategoryInfo(skin.getDrawable("icon_fe_ingot"), Quarry.Q.i18n.get("tab.metal"), iron));
+        categoryInfos.add(new CategoryInfo(skin.getDrawable("icon_misc"), Quarry.Q.i18n.get("tab.misc"), misc));
+        categoryInfos.add(new CategoryInfo(skin.getDrawable("icon_liquids"), Quarry.Q.i18n.get("tab.water"), wate));
+        categoryInfos.add(new CategoryInfo(skin.getDrawable("icon_power"), Quarry.Q.i18n.get("tab.power"), powe));
+        categoryInfos.add(new CategoryInfo(Polymerizer.classSchema.icon, Quarry.Q.i18n.get("tab.hightech"), high));
+        categoryInfos.add(new CategoryInfo(skin.getDrawable("icon_fe_ingot"), Quarry.Q.i18n.get("tab.mods"), mods));
+
+        int categoryCount = categoryInfos.size();
+        buildCategories = new VerticalGroup[categoryCount];
+        buildCategoryButtons = new ButtonGroup[categoryCount];
         for (int i = 0; i < buildCategories.length; i++) {
-            VerticalGroup t = new VerticalGroup();
-            t.expand().fill();
-            buildCategories[i] = t;
-            ButtonGroup<Button> bg = new ButtonGroup<>();
-            bg.setMinCheckCount(0);
-            buildCategoryButtons[i] = bg;
+            buildCategories[i] = new VerticalGroup();
+            buildCategories[i].expand().fill();
+            buildCategoryButtons[i] = new ButtonGroup<>();
+            buildCategoryButtons[i].setMinCheckCount(0);
         }
 
         buildMenuItem(tube, new Conveyor(-1, 0));
@@ -881,15 +776,26 @@ public class GameUi implements Ui {
         buildMenuItem(powe, new SolarPanel(-1, 0));
         buildMenuItem(powe, new GasTurbine(-1, 0));
 
-        buildScrollPane = new ScrollPane(buildTabs, skin, "container");
-        ScrollPaneStyle sps = new ScrollPaneStyle(buildScrollPane.getStyle());
-        sps.background = getDrawable(skin, "panel_metalDark", 25, 25, 25, 25);
-        buildScrollPane.setStyle(sps);
-        buildScrollPane.setScrollingDisabled(true, true);
-        buildScrollPane.setSize(600, Const.UI_H - 575 - Quarry.Q.safeInsets[1] - Quarry.Q.safeInsets[3]);
-        buildScrollPane.setPosition((Const.UI_W - buildScrollPane.getWidth()) / 2, 434);
+        buildMenuItem(mods, new OreMine(-1, 0));
 
-        buildScrollPane.setVisible(false);
+        buildItemScrollPane = new ScrollPane(null, skin, "container");
+        buildItemScrollPane.setScrollingDisabled(true, false);
+        buildItemScrollPane.setSize(400, totalTabHeight + 60);
+
+        ScrollPane categoryScroll = new ScrollPane(buildTabs, skin, "container");
+        categoryScroll.setScrollingDisabled(true, false);
+        categoryScroll.setSize(200, totalTabHeight + 60);
+
+        buildMainContainer = new Table();
+        buildMainContainer.add(categoryScroll).width(200).expandY().fillY();
+        buildMainContainer.add(buildItemScrollPane).width(500).expand().fill();
+
+        buildMainContainer.setBackground(getDrawable(skin, "panel_metalDark", 25, 25, 25, 25));
+        buildMainContainer.setSize(800, 1200);
+        buildMainContainer.setPosition((Const.UI_W - buildMainContainer.getWidth()) / 2, 434);
+        buildMainContainer.setVisible(false);
+        buildMainContainer.setName("buildMainContainer");
+        stage.addActor(buildMainContainer);
 
         buildClose = createXButton();
         buildClose.addListener(new ClickListener() {
@@ -901,35 +807,15 @@ public class GameUi implements Ui {
                 hideBuildMenu();
             }
         });
-        buildClose.setPosition(buildScrollPane.getX() + buildScrollPane.getWidth() - 40,
-                buildScrollPane.getY() + buildScrollPane.getHeight() - 40);
 
-        buildBack = Util.lml("back-button");
-        buildBack.getImageCell().size(40);
-        buildBack.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                Quarry.Q.sound.play(Quarry.Q.clickSfx);
-                buildTabButtons.uncheckAll();
-                if (buildScrollPane.getActor() instanceof VerticalGroup) {
-                    for (Actor c : ((WidgetGroup) buildScrollPane.getActor()).getChildren())
-                        if (c instanceof Button)
-                            ((Button) c).setChecked(false);
-                }
+        buildClose.setPosition(buildMainContainer.getX() + buildMainContainer.getWidth() - 40, buildMainContainer.getY() + buildMainContainer.getHeight() - 40);
 
-                buildScrollPane.setActor(buildTabs);
-                buildScrollPane.setScrollingDisabled(true, true);
-                buildBack.addAction(sequence(fadeOut(0.1f), visible(false)));
-            }
-        });
-        buildBack.setPosition(buildScrollPane.getX() - buildBack.getWidth() + 20,
-                buildScrollPane.getY() + buildScrollPane.getHeight() - buildBack.getHeight() - 20);
-        buildBack.setVisible(false);
+        buildTabs.pack();
+        buildTabs.setWidth(600);
+        buildTabs.invalidate();
 
-        buildBack.setName("buildBack");
-        stage.addActor(buildBack);
-        buildScrollPane.setName("buildScrollPane");
-        stage.addActor(buildScrollPane);
+        buildClose.setPosition(buildMainContainer.getX() + buildMainContainer.getWidth() - 40, buildMainContainer.getY() + buildMainContainer.getHeight() - 40);
+        buildItemScrollPane.setName("buildScrollPane");
         buildClose.setName("buildClose");
         stage.addActor(buildClose);
     }
@@ -961,8 +847,7 @@ public class GameUi implements Ui {
                 hideScienceUI();
             }
         });
-        scienceClose.setPosition(scienceScrollPane.getX() + scienceScrollPane.getWidth() - 40,
-                scienceScrollPane.getY() + scienceScrollPane.getHeight() - 40);
+        scienceClose.setPosition(scienceScrollPane.getX() + scienceScrollPane.getWidth() - 40, scienceScrollPane.getY() + scienceScrollPane.getHeight() - 40);
         scienceClose.setName("scienceClose");
         stage.addActor(scienceClose);
     }
@@ -1071,8 +956,7 @@ public class GameUi implements Ui {
                     if (c) {
                         // unclick other buttons
                         for (int i = 0; i < 3; i++) {
-                            if (i != j && structureUIButtons[i] != null
-                                    && structureUIButtons[i].getUserObject() == ButtonType.TempRadio)
+                            if (i != j && structureUIButtons[i] != null && structureUIButtons[i].getUserObject() == ButtonType.TempRadio)
                                 structureUIButtons[i].setChecked(false);
                         }
                     }
@@ -1106,8 +990,7 @@ public class GameUi implements Ui {
                 if (structureUIStorage.isChecked()) {
                     structureUIRecipes.setChecked(false);
                     for (int i = 0; i < 3; i++) {
-                        if (structureUIButtons[i] != null
-                                && structureUIButtons[i].getUserObject() == ButtonType.TempRadio)
+                        if (structureUIButtons[i] != null && structureUIButtons[i].getUserObject() == ButtonType.TempRadio)
                             structureUIButtons[i].setChecked(false);
                     }
 
@@ -1141,8 +1024,7 @@ public class GameUi implements Ui {
                 if (structureUIRecipes.isChecked()) {
                     structureUIStorage.setChecked(false);
                     for (int i = 0; i < 3; i++) {
-                        if (structureUIButtons[i] != null
-                                && structureUIButtons[i].getUserObject() == ButtonType.TempRadio)
+                        if (structureUIButtons[i] != null && structureUIButtons[i].getUserObject() == ButtonType.TempRadio)
                             structureUIButtons[i].setChecked(false);
                     }
 
@@ -1197,24 +1079,40 @@ public class GameUi implements Ui {
     }
 
     protected void showBuildMenu() {
-        // Fixes not only the visual bug, but a plethora of gameplay bugs involving buggy state of structure placement
         buildTabButtons.uncheckAll();
-        if (buildScrollPane.getActor() instanceof VerticalGroup) {
-            for (Actor c : ((WidgetGroup) buildScrollPane.getActor()).getChildren())
-                if (c instanceof Button)
-                    ((Button) c).setChecked(false);
-        }
 
-        for (Actor c : buildMenuStars)
-            c.setVisible(true);
-        buildScrollPane.setActor(buildTabs);
-        buildScrollPane.setScrollingDisabled(true, true);
+        buildMainContainer.getChildren().get(0).setY(0);
+        buildItemScrollPane.setScrollY(0);
+
+        updateBuildMenuSciences();
+
+        for (Actor c : buildMenuStars) c.setVisible(true);
 
         Game.G.resetActiveStructure();
         buildClose.addAction(sequence(alpha(0), visible(true), fadeIn(0.1f)));
-        buildScrollPane.addAction(sequence(alpha(0), visible(true), fadeIn(0.1f)));
+        buildMainContainer.addAction(sequence(alpha(0), visible(true), fadeIn(0.1f)));
         updateBuildMenuResources();
-        updateBuildMenuSciences();
+//        for (Actor child : buildTabs.getChildren()) {
+//            if (child instanceof Button) ((Button) child).setChecked(false);
+//        }
+//
+//        buildTabs.pack();
+//        buildTabs.setWidth(600);
+//        buildTabs.invalidateHierarchy();
+//
+//        buildScrollPane.setScrollX(0);
+//        buildScrollPane.setScrollY(0);
+//
+//        buildScrollPane.setActor(null);
+//        buildScrollPane.setActor(buildTabs);
+//        buildScrollPane.setScrollingDisabled(true, false);
+//        buildScrollPane.invalidate();
+//        buildScrollPane.layout();
+//
+//        buildTabButtons.uncheckAll();
+//        for (Actor c : buildTabs.getChildren()) {
+//            if (c instanceof Button) ((Button) c).setChecked(false);
+//        }
     }
 
     public void hideBuildMenu() {
@@ -1225,62 +1123,62 @@ public class GameUi implements Ui {
         buildButton.setChecked(false);
         if (instantly) {
             buildClose.setVisible(false);
-            buildScrollPane.setVisible(false);
-            buildBack.setVisible(false);
+            buildMainContainer.setVisible(false);
         } else {
             buildClose.addAction(sequence(fadeOut(0.1f), visible(false)));
-            buildScrollPane.addAction(sequence(fadeOut(0.1f), visible(false)));
-            buildBack.addAction(sequence(fadeOut(0.1f), visible(false)));
+            buildMainContainer.addAction(sequence(fadeOut(0.1f), visible(false)));
         }
-        for (Actor c : buildMenuStars)
-            c.setVisible(false);
+        for (Actor c : buildMenuStars) c.setVisible(false);
         stage.unfocusAll();
     }
 
     protected int buildMenuTab(Drawable icon, String title) {
-        Table t = new Table();
-        t.add(new Image(icon)).size(80);
-
-        t.row();
+        Table content = new Table();
+        content.add(new Image(icon)).size(80);
+        content.row();
 
         Label l = new Label(title, Quarry.Q.skin, "small-font", Color.WHITE);
         l.setAlignment(Align.center);
-        t.add(l).growX().top().center();
+
+        content.add(l).growX().top().center();
 
         final int index = buildTabs.getChildren().size;
 
-        final Button c = new Button(menuButtonStyle) {
+        final Button btn = new Button(menuButtonStyle) {
             @Override
             public float getPrefHeight() {
-                return isVisible() ? super.getPrefHeight() : 0;
+                return isVisible() ? buttonHeight : 0;
             }
 
             @Override
             public float getPrefWidth() {
-                return isVisible() ? super.getPrefWidth() : 0;
+                return isVisible() ? 200 : 0;
             }
         };
-        c.add(t).size((buildTabs.getWidth() - 50) / 2, (buildTabs.getHeight() - 40) / 5).top();
-        buildTabs.addActor(c);
+        btn.setSize(200, buttonHeight);
+        btn.add(content).size(200, buttonHeight);
 
-        buildTabButtons.add(c);
+//        int cellCount = buildTabs.getCells().size;
+//        if (cellCount % 2 == 0) buildTabs.row();
+//        buildTabs.add(btn).size(buttonWidth, buttonHeight).pad(5);
+        buildTabs.addActor(btn);
+        buildTabButtons.add(btn);
 
-        c.addListener(new ChangeListener() {
+        btn.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                if (c.isChecked())
-                    buildBack.addAction(sequence(alpha(0), visible(true), fadeIn(0.1f)));
-                buildScrollPane.setActor(buildCategories[index]);
-                buildScrollPane.setScrollingDisabled(true, false);
-                updateBuildMenuResources();
-                for (Actor c : buildCategories[index].getChildren()) {
-                    if (c instanceof Button)
-                        ((Button) c).setChecked(false);
+                if (btn.isChecked()) {
+                    buildItemScrollPane.setActor(buildCategories[index]);
+                    buildItemScrollPane.setScrollingDisabled(true, false);
+                    updateBuildMenuResources();
+//                    for (Actor c : buildCategories[index].getChildren()) {
+//                        if (c instanceof Button) ((Button) c).setChecked(false);
+//                    }
+                    hideTooltip();
                 }
-                hideTooltip();
             }
         });
-        c.addCaptureListener(new ClickListener() {
+        btn.addCaptureListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 Quarry.Q.sound.play(Quarry.Q.clickSfx);
@@ -1336,8 +1234,7 @@ public class GameUi implements Ui {
                 // if the capture listener hid the build menu already, we dont want to remove the tooltip.
                 // TODO: maybe find out how to cancel the event that ends up here and we do not want
 
-                if (!buildScrollPane.isVisible() || buildScrollPane.getActions().size > 0)
-                    return;
+                if (!buildMainContainer.isVisible() || buildMainContainer.getActions().size > 0) return;
                 if (t.isChecked()) {
                     showTooltip((Structure<?>) t.getUserObject());
                     tooltipClose.setVisible(false);
@@ -1354,8 +1251,7 @@ public class GameUi implements Ui {
 
     protected Button scienceMenuItem(ScienceType science) {
         Button b = scienceButtons.get(science);
-        if (b != null)
-            return b;
+        if (b != null) return b;
 
         final Button t = new Button(menuButtonStyle) {
             @Override
@@ -1381,8 +1277,7 @@ public class GameUi implements Ui {
         HorizontalGroup hg = new HorizontalGroup();
         hg.space(10).left();
         for (Amount a : science.costs.entries) {
-            hg.addActor(createResourceTable(TOOLTIP_ICON_SIZE, Quarry.Q.skin, a.getItem(),
-                    formatResourceAmount(a.getAmount())));
+            hg.addActor(createResourceTable(TOOLTIP_ICON_SIZE, Quarry.Q.skin, a.getItem(), formatResourceAmount(a.getAmount())));
         }
 
         t.add();
@@ -1395,9 +1290,7 @@ public class GameUi implements Ui {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 Quarry.Q.sound.play(Quarry.Q.clickSfx);
-                if (currentClickedStructure instanceof ScienceLab && t.isChecked()
-                        && (((Table) t.getChildren().get(1)).getChildren().get(0).getColor().equals(Color.WHITE)
-                                || Game.GOD_MODE)) {
+                if (currentClickedStructure instanceof ScienceLab && t.isChecked() && (((Table) t.getChildren().get(1)).getChildren().get(0).getColor().equals(Color.WHITE) || Game.GOD_MODE)) {
                     ScienceType s = (ScienceType) t.getUserObject();
                     if (Game.DRAW_DEBUG) {
                         Game.G.addScience(s);
@@ -1448,33 +1341,21 @@ public class GameUi implements Ui {
     }
 
     protected void showOrHideRotateButton() {
-        if (rotateButton == null || tooltip == null)
-            return;
+        if (rotateButton == null || tooltip == null) return;
 
         if (Game.G.activeStructure == tooltipCurrentStructure || currentClickedStructure != null) {
             try {
                 rotateButton.clearActions();
-                if ((tooltipCurrentStructure != null && !(tooltipCurrentStructure.getSchema().has(Flags.NotRotatable))
-                        || currentClickedStructure instanceof IRotatable)) {
+                if ((tooltipCurrentStructure != null && !(tooltipCurrentStructure.getSchema().has(Flags.NotRotatable)) || currentClickedStructure instanceof IRotatable)) {
                     if (!rotateButton.isVisible()) {
-                        rotateButton.addAction(sequence(
-                                moveTo(rotateButton.getX(), tooltip.getY() + 200),
-                                alpha(1),
-                                visible(true),
-                                moveTo(rotateButton.getX(), tooltip.getY() + tooltip.getHeight() + 20, 0.15f,
-                                        Interpolation.swingOut)));
+                        rotateButton.addAction(sequence(moveTo(rotateButton.getX(), tooltip.getY() + 200), alpha(1), visible(true), moveTo(rotateButton.getX(), tooltip.getY() + tooltip.getHeight() + 20, 0.15f, Interpolation.swingOut)));
                     } else {
                         // show animation might not finish in time
                         rotateButton.setColor(Color.WHITE); // clear alpha
                         rotateButton.setPosition(rotateButton.getX(), tooltip.getY() + tooltip.getHeight() + 20);
                     }
                 } else if (rotateButton.isVisible()) {
-                    rotateButton.addAction(sequence(parallel(
-                            moveTo(rotateButton.getX(), tooltip.getY() + tooltip.getHeight() + 20),
-                            moveTo(rotateButton.getX(), tooltip.getY() + 200, 0.15f, Interpolation.swingOut),
-                            fadeOut(0.1f)),
-                            visible(false),
-                            alpha(1)));
+                    rotateButton.addAction(sequence(parallel(moveTo(rotateButton.getX(), tooltip.getY() + tooltip.getHeight() + 20), moveTo(rotateButton.getX(), tooltip.getY() + 200, 0.15f, Interpolation.swingOut), fadeOut(0.1f)), visible(false), alpha(1)));
                 }
             } catch (IndexOutOfBoundsException e) {
                 e.printStackTrace();
@@ -1483,19 +1364,14 @@ public class GameUi implements Ui {
     }
 
     protected void showOrHideFlipButton() {
-        if (flipButton == null || tooltip == null)
-            return;
+        if (flipButton == null || tooltip == null) return;
 
         if (Game.G.activeStructure == tooltipCurrentStructure || currentClickedStructure != null) {
             flipButton.clearActions();
             if (tooltipCurrentStructure instanceof IFlippable || currentClickedStructure instanceof IFlippable) {
-                flipButton.addAction(sequence(alpha(1), visible(true), moveTo(flipButton.getX(),
-                        tooltip.getY() + tooltip.getHeight() + 20, 0.15f, Interpolation.swingOut)));
+                flipButton.addAction(sequence(alpha(1), visible(true), moveTo(flipButton.getX(), tooltip.getY() + tooltip.getHeight() + 20, 0.15f, Interpolation.swingOut)));
             } else {
-                flipButton.addAction(sequence(
-                        parallel(moveTo(flipButton.getX(), tooltip.getY() + 200, 0.15f, Interpolation.swingOut),
-                                fadeOut(0.1f)),
-                        visible(false), alpha(1)));
+                flipButton.addAction(sequence(parallel(moveTo(flipButton.getX(), tooltip.getY() + 200, 0.15f, Interpolation.swingOut), fadeOut(0.1f)), visible(false), alpha(1)));
             }
         }
     }
@@ -1511,7 +1387,7 @@ public class GameUi implements Ui {
             updateCopyTableResources(false);
         }
 
-        if (buildScrollPane != null && buildScrollPane.isVisible()) {
+        if (buildItemScrollPane != null && buildItemScrollPane.isVisible()) {
             updateBuildMenuResources();
         }
 
@@ -1531,21 +1407,26 @@ public class GameUi implements Ui {
             //            ((TextTooltip) t0.getListeners().get(0)).getActor().setText(Quarry.Q.getMoney() + "$");
             //            resources.addActor(t0);
 
-            for (Map.Entry<ItemType, Integer> r : Game.G.getAllResources()) {
-                Table ac = resourceRows[r.getKey().ordinal()];
-                ((Label) ac.getCells().get(1).getActor()).setText("" + r.getValue());
-                ((TextTooltip) ac.getListeners().get(0)).getActor().setText(r.getValue() + " " + r.getKey().title);
-                if (Game.G.hasSeenResource(r.getKey()))
-                    resources.addActor(ac);
+            for (ItemType type : ItemType.values) {
+                if (Game.G.hasSeenResource(type)) {
+                    Table row = resourceRows[type.ordinal()];
+                    int amount = Game.G.getResource(type);
+                    Label label = (Label) row.getCells().get(1).getActor();
+                    label.setText(String.valueOf(amount));
+                    TextTooltip tooltip = (TextTooltip) row.getListeners().get(0);
+                    tooltip.getActor().setText(amount + " " + type.title);
+
+                    resources.addActor(row);
+                }
             }
 
-            resources.fill();
+            resources.invalidate();
+            resources.validate();
             resources.pack();
         } catch (IndexOutOfBoundsException e) {
             // Quarry.Q.pi.message(PlatformInterface.MSG_EXCEPTION, e);
         }
         int w = (int) resources.getWidth();
-
         int round = 50;
 
         resources.setWidth(w + (round - w % round));
@@ -1562,185 +1443,327 @@ public class GameUi implements Ui {
     }
 
     public void updateBuildMenuResources() {
-        if (buildScrollPane.getActor() != buildTabs) {
-            for (Actor c : ((VerticalGroup) buildScrollPane.getActor()).getChildren()) {
-                if (c instanceof Button) {
-                    boolean canAfford = true;
+        Actor actor = buildItemScrollPane.getActor();
+        if (!(actor instanceof VerticalGroup)) return;
 
-                    if (tutorial.getStepNum() > -1) {
-                        if (tutorial.getStepNum() < 10) {
-                            canAfford = c.getUserObject() instanceof Mine;
-                        } else {
-                            canAfford = c.getUserObject().getClass().equals(Conveyor.class);
-                        }
+        for (Actor c : ((VerticalGroup) actor).getChildren()) {
+            if (c instanceof Button) {
+                boolean canAfford = true;
+
+                if (tutorial.getStepNum() > -1) {
+                    if (tutorial.getStepNum() < 10) {
+                        canAfford = c.getUserObject() instanceof Mine;
+                    } else {
+                        canAfford = c.getUserObject().getClass().equals(Conveyor.class);
                     }
-
-                    if (canAfford) {
-                        for (Amount a : ((Structure<?>) c.getUserObject()).getSchema().buildCosts.entries) {
-                            if (Game.G.getResource(a.getItem()) < a.getAmount()) {
-                                canAfford = false;
-                                break;
-                            }
-                        }
-                    }
-
-                    if (canAfford)
-                        ((Table) c).getChildren().get(1).setColor(Color.WHITE);
-                    else
-                        ((Table) c).getChildren().get(1).setColor(off);
                 }
+
+                if (canAfford) {
+                    for (Amount a : ((Structure<?>) c.getUserObject()).getSchema().buildCosts.entries) {
+                        if (Game.G.getResource(a.getItem()) < a.getAmount()) {
+                            canAfford = false;
+                            break;
+                        }
+                    }
+                }
+
+                ((Table) c).getChildren().get(1).setColor(canAfford ? Color.WHITE : off);
             }
         }
     }
-
-    public void updateBuildMenuSciences() {
-        int i = 0;
-
-        if (buildMenuSciences.isEmpty()) {
-            buildMenuSciences.addAll(Game.G.sciences);
+    ///Not usable right now...
+/*
+    private void addStarToButton(Button btn, Runnable onClick) {
+        for (Actor child : btn.getChildren()) {
+            if (child.getName() != null && child.getName().equals("star_bg")) {
+                return;
+            }
         }
 
-        Array<Actor> categoryAddStar = new Array<>();
-        Array<Actor> structureAddStar = new Array<>();
+        final Image bg = new Image(Quarry.Q.skin.getDrawable("icon_new_bg")) {
+            @Override
+            public boolean isVisible() {
+                return buildMainContainer.isVisible();
+            }
+        };
+        bg.setTouchable(Touchable.disabled);
+        bg.setSize(50, 50);
+        bg.setOrigin(bg.getWidth() / 2, bg.getHeight() / 2);
+        bg.addAction(forever(rotateBy(360, 30)));
+        bg.setName("star_bg");
+        bg.setPosition(btn.getWidth() - bg.getWidth() - 10, btn.getHeight() - bg.getHeight() - 10);
+        btn.addActor(bg);
 
-        for (VerticalGroup vg : buildCategories) {
-            boolean any = false;
-            int _new = 0;
+        final Image fg = new Image(Quarry.Q.skin.getDrawable("icon_new_fg")) {
+            @Override
+            public boolean isVisible() {
+                return buildMainContainer.isVisible();
+            }
+        };
+        fg.setSize(bg.getWidth(), bg.getHeight());
+        fg.setPosition(bg.getX(), bg.getY());
+        fg.setTouchable(Touchable.enabled);
+        fg.setName("star_fg");
+        fg.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                Quarry.Q.sound.play(Quarry.Q.clickSfx);
+                onClick.run();
+            }
+        });
+        btn.addActor(fg);
+        buildMenuStars.add(bg);
+        buildMenuStars.add(fg);
+    }
+
+    private void removeStarFromButton(Button btn) {
+        for (Actor child : btn.getChildren()) {
+            if (child.getName() != null && (child.getName().equals("star_bg") || child.getName().equals("star_fg"))) {
+                child.remove();
+            }
+        }
+    }
+*/
+    public void updateBuildMenuSciences() {
+        boolean[] categoryVisible = new boolean[buildCategories.length];
+        for (int i = 0; i < buildCategories.length; i++) {
+            VerticalGroup vg = buildCategories[i];
+            boolean anyVisible = false;
             for (Actor c : vg.getChildren()) {
                 if (c instanceof Button) {
                     Structure<?> s = ((Structure<?>) c.getUserObject());
-                    Collection<ScienceType> sciences = s.getSchema().sciencesRequired;
-                    boolean vis = Game.G.hasSciences(sciences);
-                    if (vis && !buildMenuSciences.containsAll(sciences)) {
-                        _new++;
-                        structureAddStar.add(c);
-                    } else if (s instanceof ProducerStructure) {
-                        // check if new recipe
-                        for (Recipe r : ((ProducerSchema) s.getSchema()).recipeList.recipes) {
-                            if (Game.G.hasSciences(r.getRequiredSciences())
-                                    && !buildMenuSciences.containsAll(r.getRequiredSciences())) {
-                                _new++;
-                                structureAddStar.add(c);
-                            }
-                        }
-                    }
-
+                    boolean vis = Game.G.hasSciences(s.getSchema().sciencesRequired);
                     c.setVisible(vis);
-                    if (vis)
-                        any = true;
+                    if (vis) anyVisible = true;
                 }
             }
             vg.invalidate();
             vg.validate();
+            categoryVisible[i] = anyVisible;
+        }
 
-            Actor a = buildTabs.getChildren().get(i);
+        buildTabs.clearChildren();
+        buildTabButtons.clear();
 
-            if (!any) {
-                a.setVisible(false);
-            } else {
-                boolean vis = a.isVisible();
-                a.setVisible(true);
-                if (!vis || _new > 0) {
-                    categoryAddStar.add(a);
+        for (CategoryInfo info : categoryInfos) {
+            if (!categoryVisible[info.index]) continue;
+
+            Table content = new Table();
+            content.add(new Image(info.icon)).size(80);
+            content.row();
+            Label label = new Label(info.title, Quarry.Q.skin, "small-font", Color.WHITE);
+            label.setAlignment(Align.center);
+            content.add(label).growX().top().center();
+
+            final Button btn = new Button(menuButtonStyle) {
+                @Override
+                public float getPrefWidth() {
+                    return isVisible() ? 200 : 0;
+                }
+
+                @Override
+                public float getPrefHeight() {
+                    return isVisible() ? buttonHeight : 0;
+                }
+            };
+            btn.setSize(200, buttonHeight);
+            btn.add(content).size(200, buttonHeight);
+            btn.setUserObject(info.index);
+
+            // 判断该分类是否有“新”建筑（即所需科技未全部拥有）
+            boolean hasNew = false;
+            for (Actor child : buildCategories[info.index].getChildren()) {
+                if (child instanceof Button) {
+                    Structure<?> s = (Structure<?>) child.getUserObject();
+                    if (s.getSchema().sciencesRequired != null && !s.getSchema().sciencesRequired.isEmpty()) {
+                        if (!buildMenuSciences.containsAll(s.getSchema().sciencesRequired)) {
+                            hasNew = true;
+                            break;
+                        }
+                    }
                 }
             }
-            i++;
-        }
+            if (hasNew) {
+                ///Not usable right now...
+                /*
+                addStarToButton(btn, () -> {
+                    for (Actor child : buildCategories[info.index].getChildren()) {
+                        if (child instanceof Button) {
+                            Structure<?> s = (Structure<?>) child.getUserObject();
+                            if (s.getSchema().sciencesRequired != null) {
+                                buildMenuSciences.addAll(s.getSchema().sciencesRequired);
+                            }
+                        }
+                    }
+                    updateBuildMenuSciences();
+                });
+                */
+            }
 
-        if (!categoryAddStar.isEmpty() || !structureAddStar.isEmpty()) {
-            for (Actor c : buildMenuStars)
-                c.remove();
-            buildMenuStars.clear();
-        }
+            buildTabs.addActor(btn);
+            buildTabButtons.add(btn);
 
-        buildTabs.invalidate();
-        buildTabs.validate();
-
-        for (final Actor a : categoryAddStar) {
-            if (buildMenuStars == null)
-                buildMenuStars = new Array<>();
-            final Image bg = new Image(Quarry.Q.skin.getDrawable("icon_new_bg")) {
+            final int idx = info.index;
+            btn.addListener(new ChangeListener() {
                 @Override
-                public boolean isVisible() {
-                    return buildButton.isChecked() && buildScrollPane.getActor() == buildTabs;
+                public void changed(ChangeEvent event, Actor actor) {
+                    if (btn.isChecked()) {
+                        buildItemScrollPane.setActor(buildCategories[idx]);
+                        buildItemScrollPane.setScrollingDisabled(true, false);
+                        updateBuildMenuResources();
+                        hideTooltip();
+                    }
                 }
-            };
-            bg.setTouchable(Touchable.disabled);
-            bg.setSize(50, 50);
-            bg.setOrigin(bg.getWidth() / 2, bg.getHeight() / 2);
-            bg.addAction(forever(rotateBy(360, 30)));
-            bg.setPosition(160, 110);
-
-            buildMenuStars.add(bg);
-            bg.setName("star_bg");
-            ((Group) a).addActor(bg);
-            final Image fg = new Image(Quarry.Q.skin.getDrawable("icon_new_fg")) {
-                @Override
-                public boolean isVisible() {
-                    return buildButton.isChecked() && buildScrollPane.getActor() == buildTabs;
-                }
-            };
-            ;
-            fg.setSize(bg.getWidth(), bg.getHeight());
-            fg.setTouchable(Touchable.disabled);
-            fg.setPosition(bg.getX(), bg.getY());
-            fg.setName("star_fg");
-            ((Group) a).addActor(fg);
-            buildMenuStars.add(fg);
-
-            a.addCaptureListener(new ClickListener() {
+            });
+            btn.addCaptureListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
-                    fg.remove();
-                    bg.remove();
-                    a.removeListener(this);
+                    Quarry.Q.sound.play(Quarry.Q.clickSfx);
                 }
             });
         }
 
-        for (final Actor a : structureAddStar) {
-            if (buildMenuStars == null)
-                buildMenuStars = new Array<>();
-            final Image bg = new Image(Quarry.Q.skin.getDrawable("icon_new_bg")) {
-                @Override
-                public boolean isVisible() {
-                    return buildButton.isChecked() && buildScrollPane.getActor() == a.getParent();
+        ///Not usable right now...
+        /*
+        for (int i = 0; i < buildCategories.length; i++) {
+            VerticalGroup vg = buildCategories[i];
+            for (Actor child : vg.getChildren()) {
+                if (child instanceof Button) {
+                    Button btn = (Button) child;
+                    Structure<?> s = (Structure<?>) btn.getUserObject();
+                    boolean isNew = false;
+                    if (s.getSchema().sciencesRequired != null && !s.getSchema().sciencesRequired.isEmpty()) {
+                        if (!buildMenuSciences.containsAll(s.getSchema().sciencesRequired)) {
+                            isNew = true;
+                        }
+                    }
+                    boolean hasStar = false;
+                    for (Actor grandChild : btn.getChildren()) {
+                        if (grandChild.getName() != null && grandChild.getName().equals("star_bg")) {
+                            hasStar = true;
+                            break;
+                        }
+                    }
+                    if (isNew && !hasStar) {
+                        addStarToButton(btn, () -> {
+                            if (s.getSchema().sciencesRequired != null) {
+                                buildMenuSciences.addAll(s.getSchema().sciencesRequired);
+                            }
+                            updateBuildMenuSciences();
+                        });
+                    } else if (!isNew && hasStar) {
+                        removeStarFromButton(btn);
+                    }
                 }
-            };
-            bg.setTouchable(Touchable.disabled);
-            bg.setSize(50, 50);
-            bg.setOrigin(bg.getWidth() / 2, bg.getHeight() / 2);
-            bg.addAction(forever(rotateBy(360, 30)));
-            bg.setPosition(50, 50);
-            buildMenuStars.add(bg);
-            bg.setName("star_bg");
-            ((Group) a).addActor(bg);
-
-            final Image fg = new Image(Quarry.Q.skin.getDrawable("icon_new_fg")) {
-                @Override
-                public boolean isVisible() {
-                    return buildButton.isChecked() && buildScrollPane.getActor() == a.getParent();
-                }
-            };
-            ;
-            fg.setSize(bg.getWidth(), bg.getHeight());
-            fg.setTouchable(Touchable.disabled);
-            fg.setPosition(bg.getX(), bg.getY());
-            fg.setName("star_fg");
-            ((Group) a).addActor(fg);
-            buildMenuStars.add(fg);
-
-            a.addCaptureListener(new ClickListener() {
-                @Override
-                public void clicked(InputEvent event, float x, float y) {
-                    fg.remove();
-                    bg.remove();
-                    a.removeListener(this);
-                }
-            });
+            }
         }
+        int firstVisibleIndex = -1;
+        for (CategoryInfo info : categoryInfos) {
+            if (categoryVisible[info.index]) {
+                firstVisibleIndex = info.index;
+                break;
+            }
+        }
+        if (firstVisibleIndex != -1) {
+            for (Actor child : buildTabs.getChildren()) {
+                if (child instanceof Button) {
+                    Integer idx = (Integer) child.getUserObject();
+                    if (idx != null && idx == firstVisibleIndex) {
+                        ((Button) child).setChecked(true);
+                        buildItemScrollPane.setActor(buildCategories[firstVisibleIndex]);
+                        break;
+                    }
+                }
+            }
+        } else {
+            buildItemScrollPane.setActor(null);
+        }
+        */
+
+//        buildTabs.pack();
+
+//        for (final Actor a : categoryAddStar) {
+//            if (buildMenuStars == null) buildMenuStars = new Array<>();
+//            final Image bg = new Image(Quarry.Q.skin.getDrawable("icon_new_bg")) {
+//                @Override
+//                public boolean isVisible() {
+//                    return buildButton.isChecked() && buildScrollPane.getActor() == buildTabs;
+//                }
+//            };
+//            bg.setTouchable(Touchable.disabled);
+//            bg.setSize(50, 50);
+//            bg.setOrigin(bg.getWidth() / 2, bg.getHeight() / 2);
+//            bg.addAction(forever(rotateBy(360, 30)));
+//            bg.setPosition(160, 110);
+//
+//            buildMenuStars.add(bg);
+//            bg.setName("star_bg");
+//            ((Group) a).addActor(bg);
+//            final Image fg = new Image(Quarry.Q.skin.getDrawable("icon_new_fg")) {
+//                @Override
+//                public boolean isVisible() {
+//                    return buildButton.isChecked() && buildScrollPane.getActor() == buildTabs;
+//                }
+//            };
+//
+//            fg.setSize(bg.getWidth(), bg.getHeight());
+//            fg.setTouchable(Touchable.disabled);
+//            fg.setPosition(bg.getX(), bg.getY());
+//            fg.setName("star_fg");
+//            ((Group) a).addActor(fg);
+//            buildMenuStars.add(fg);
+//            a.addCaptureListener(new ClickListener() {
+//                @Override
+//                public void clicked(InputEvent event, float x, float y) {
+//                    fg.remove();
+//                    bg.remove();
+//                    a.removeListener(this);
+//                }
+//            });
+//        }
+//
+//        for (final Actor a : structureAddStar) {
+//            if (buildMenuStars == null) buildMenuStars = new Array<>();
+//            final Image bg = new Image(Quarry.Q.skin.getDrawable("icon_new_bg")) {
+//                @Override
+//                public boolean isVisible() {
+//                    return buildButton.isChecked() && buildScrollPane.getActor() == a.getParent();
+//                }
+//            };
+//            bg.setTouchable(Touchable.disabled);
+//            bg.setSize(50, 50);
+//            bg.setOrigin(bg.getWidth() / 2, bg.getHeight() / 2);
+//            bg.addAction(forever(rotateBy(360, 30)));
+//            bg.setPosition(50, 50);
+//            buildMenuStars.add(bg);
+//            bg.setName("star_bg");
+//            ((Group) a).addActor(bg);
+//
+//            final Image fg = new Image(Quarry.Q.skin.getDrawable("icon_new_fg")) {
+//                @Override
+//                public boolean isVisible() {
+//                    return buildButton.isChecked() && buildScrollPane.getActor() == a.getParent();
+//                }
+//            };
+//
+//            fg.setSize(bg.getWidth(), bg.getHeight());
+//            fg.setTouchable(Touchable.disabled);
+//            fg.setPosition(bg.getX(), bg.getY());
+//            fg.setName("star_fg");
+//            ((Group) a).addActor(fg);
+//            buildMenuStars.add(fg);
+//            a.addCaptureListener(new ClickListener() {
+//                @Override
+//                public void clicked(InputEvent event, float x, float y) {
+//                    fg.remove();
+//                    bg.remove();
+//                    a.removeListener(this);
+//                }
+//            });
+//        }
 
         buildMenuSciences.addAll(Game.G.sciences);
+//        buildTabs.invalidateHierarchy();
     }
 
     public void showTooltip(Structure<?> structure) {
@@ -1756,8 +1779,7 @@ public class GameUi implements Ui {
         Skin skin = Quarry.Q.skin;
 
         tooltipCosts.clear();
-        Table tiles = createResourceTable(TOOLTIP_ICON_SIZE, skin, "icon_tiles",
-                structure.getWidth() + "x" + structure.getHeight());
+        Table tiles = createResourceTable(TOOLTIP_ICON_SIZE, skin, "icon_tiles", structure.getWidth() + "x" + structure.getHeight());
         tiles.setBackground(skin.getDrawable("shadow02-bg"));
         tiles.pad(0, 5, 0, 5);
         tiles.left();
@@ -1775,13 +1797,10 @@ public class GameUi implements Ui {
 
             for (int i = 0; i < Math.min(len, ICONS_PER_COLUMN); i++) {
                 Amount e = costs.entries[i];
-                tooltipCosts.add(
-                        createResourceTable(TOOLTIP_ICON_SIZE, skin, e.getItem(), formatResourceAmount(e.getAmount())))
-                        .padRight(15);
+                tooltipCosts.add(createResourceTable(TOOLTIP_ICON_SIZE, skin, e.getItem(), formatResourceAmount(e.getAmount()))).padRight(15);
                 if (len > i + ICONS_PER_COLUMN) {
                     Amount f = costs.entries[i + ICONS_PER_COLUMN];
-                    tooltipCosts.add(createResourceTable(TOOLTIP_ICON_SIZE, skin, f.getItem(),
-                            formatResourceAmount(f.getAmount())));
+                    tooltipCosts.add(createResourceTable(TOOLTIP_ICON_SIZE, skin, f.getItem(), formatResourceAmount(f.getAmount())));
                 }
                 tooltipCosts.row();
             }
@@ -1802,8 +1821,7 @@ public class GameUi implements Ui {
         updateCopyTableResources(true);
     }
 
-    protected void buildRecipes(Structure<?> structure, Table recipeTable, final Label description,
-            boolean allRecipes) {
+    protected void buildRecipes(Structure<?> structure, Table recipeTable, final Label description, boolean allRecipes) {
         if (structure instanceof ProducerStructure) {
             Array<Recipe> recipes = new Array<>(((ProducerSchema) structure.getSchema()).recipeList.recipes);
 
@@ -1816,7 +1834,8 @@ public class GameUi implements Ui {
                 recipes.clear();
                 Mine m = (Mine) structure;
 
-                outer: for (Recipe r : ((ProducerSchema) structure.getSchema()).recipeList.recipes) {
+                outer:
+                for (Recipe r : ((ProducerSchema) structure.getSchema()).recipeList.recipes) {
                     ItemType outItem = r.getOutput().entries[0].getItem();
                     ItemCategory outCat = r.getOutput().entries[0].getCat();
                     for (ItemType t : m.mineableItems) {
@@ -1828,10 +1847,9 @@ public class GameUi implements Ui {
                 }
             }
 
-            for (Iterator<Recipe> iter = recipes.iterator(); iter.hasNext();) {
+            for (Iterator<Recipe> iter = recipes.iterator(); iter.hasNext(); ) {
                 Recipe r = iter.next();
-                if (!Game.G.hasSciences(r.getRequiredSciences()))
-                    iter.remove();
+                if (!Game.G.hasSciences(r.getRequiredSciences())) iter.remove();
             }
 
             final Array<Recipe> finalRecipes = recipes;
@@ -1871,8 +1889,7 @@ public class GameUi implements Ui {
                         }
 
                         if (isFlinging() || isPanning() || getVisualScrollX() != getScrollX()) {
-                            Recipe r = finalRecipes
-                                    .get(MathUtils.clamp(Math.round(getScrollX() / width), 0, finalRecipes.size - 1));
+                            Recipe r = finalRecipes.get(MathUtils.clamp(Math.round(getScrollX() / width), 0, finalRecipes.size - 1));
                             currentRecipe = r;
                             description.setText(r.getDescription());
                             float scroll = getScrollX();
@@ -1916,21 +1933,15 @@ public class GameUi implements Ui {
             if (structure instanceof Storage || structure instanceof Tank || structure instanceof Barrel) {
                 for (Component c : structure.getSchema().getComponents()) {
                     if (c instanceof CTank) {
-                        recipeTable
-                                .add(createResourceTable(TOOLTIP_ICON_SIZE, Quarry.Q.skin, "icon_tank",
-                                        formatResourceAmount(((CTank) c).getSize() / 1000f) + "L"))
-                                .top().expand();
+                        recipeTable.add(createResourceTable(TOOLTIP_ICON_SIZE, Quarry.Q.skin, "icon_tank", formatResourceAmount(((CTank) c).getSize() / 1000f) + "L")).top().expand();
                     } else {
-                        recipeTable.add(createResourceTable(TOOLTIP_ICON_SIZE, Quarry.Q.skin, "icon_cinventory",
-                                ((IStorage) c).getSize() + "")).top().expand();
+                        recipeTable.add(createResourceTable(TOOLTIP_ICON_SIZE, Quarry.Q.skin, "icon_cinventory", ((IStorage) c).getSize() + "")).top().expand();
                     }
                 }
             } else if (structure instanceof Substation) {
-                recipeTable.add(createResourceTable(TOOLTIP_ICON_SIZE, Quarry.Q.skin, "icon_power",
-                        formatPowerAmount(((Substation) structure).getSchema().capacity))).top().expand();
+                recipeTable.add(createResourceTable(TOOLTIP_ICON_SIZE, Quarry.Q.skin, "icon_power", formatPowerAmount(((Substation) structure).getSchema().capacity))).top().expand();
             } else if (structure instanceof SolarPanelOutlet || structure instanceof SolarPanel) {
-                recipeTable.add(createResourceTable(TOOLTIP_ICON_SIZE, Quarry.Q.skin, "icon_power",
-                        formatPowerAmount(SolarPanelOutlet.POWER_OUT) + "/s")).top().expand();
+                recipeTable.add(createResourceTable(TOOLTIP_ICON_SIZE, Quarry.Q.skin, "icon_power", formatPowerAmount(SolarPanelOutlet.POWER_OUT) + "/s")).top().expand();
             } else if (structure instanceof Boiler) {
                 recipeTable.add(boilerRecipe).expandY().right().top().height(145).minWidth(300);
             } else if (structure instanceof Refinery) {
@@ -1942,8 +1953,7 @@ public class GameUi implements Ui {
     }
 
     public void updateTooltipResources() {
-        if (tooltipCurrentStructure == null)
-            return;
+        if (tooltipCurrentStructure == null) return;
 
         boolean canAfford = true;
 
@@ -1952,8 +1962,7 @@ public class GameUi implements Ui {
 
         for (Cell<?> c : tooltipCosts.getCells()) {
             Table t = (Table) c.getActor();
-            if (t.getUserObject() == null)
-                continue;
+            if (t.getUserObject() == null) continue;
 
             ItemType res = (ItemType) t.getUserObject();
 
@@ -1969,8 +1978,7 @@ public class GameUi implements Ui {
             l.setText(formatResourceAmount(costs.getAmount(res) * scale));
             l.setColor(more ? Color.WHITE : Color.FIREBRICK);
 
-            if (!more)
-                canAfford = false;
+            if (!more) canAfford = false;
         }
 
         canAffordStructure = canAfford;
@@ -1980,8 +1988,7 @@ public class GameUi implements Ui {
         if (reset) {
             Skin skin = Quarry.Q.skin;
             copyCosts.clear();
-            Table tiles = createResourceTable(TOOLTIP_ICON_SIZE, skin, "icon_tiles",
-                    Game.G.copyRegion[2] + "x" + Game.G.copyRegion[3]);
+            Table tiles = createResourceTable(TOOLTIP_ICON_SIZE, skin, "icon_tiles", Game.G.copyRegion[2] + "x" + Game.G.copyRegion[3]);
             tiles.setBackground(skin.getDrawable("shadow02-bg"));
             tiles.pad(0, 5, 0, 5);
             tiles.left();
@@ -1995,11 +2002,8 @@ public class GameUi implements Ui {
             }
 
             for (Map.Entry<ItemType, Integer> x : Game.G.copyCost.entrySet()) {
-                if (i++ % 4 == 0)
-                    copyCosts.row();
-                copyCosts.add(
-                        createResourceTable(TOOLTIP_ICON_SIZE, skin, x.getKey(), formatResourceAmount(x.getValue())))
-                        .padRight(15);
+                if (i++ % 4 == 0) copyCosts.row();
+                copyCosts.add(createResourceTable(TOOLTIP_ICON_SIZE, skin, x.getKey(), formatResourceAmount(x.getValue()))).padRight(15);
             }
         }
 
@@ -2022,8 +2026,7 @@ public class GameUi implements Ui {
             l.setText(formatResourceAmount(Game.G.copyCost.get(res)));
             l.setColor(more ? Color.WHITE : Color.FIREBRICK);
 
-            if (!more)
-                canAfford = false;
+            if (!more) canAfford = false;
         }
 
         canAffordStructure = canAfford;
@@ -2052,8 +2055,7 @@ public class GameUi implements Ui {
     }
 
     public void showStructureUI(Structure<?> s) {
-        if (currentClickedStructure == s)
-            return;
+        if (currentClickedStructure == s) return;
 
         if (s instanceof ShaftDrillHead) {
             s = ((ShaftDrillHead) s).getDrill();
@@ -2085,11 +2087,7 @@ public class GameUi implements Ui {
                 }
         }
 
-        structureUIRecipes.setVisible(s instanceof ProducerStructure
-                || s instanceof GeneratorStructure
-                || s.getSchema().type == StructureType.Refinery
-                || s.getSchema().type == StructureType.Boiler
-                || s.getSchema().type == StructureType.DistillationColumn);
+        structureUIRecipes.setVisible(s instanceof ProducerStructure || s instanceof GeneratorStructure || s.getSchema().type == StructureType.Refinery || s.getSchema().type == StructureType.Boiler || s.getSchema().type == StructureType.DistillationColumn);
 
         Arrays.fill(structureUIButtonCallbacks, null);
         structureUITitle.setText(s.getSchema().name);
@@ -2110,14 +2108,12 @@ public class GameUi implements Ui {
                     ibs.checked = Quarry.Q.skin.getDrawable("round_metalActive");
                 }
 
-                if (b.type == ButtonType.StateToggle)
-                    ib.setChecked(s.getButtonState(i));
-                else if (b.type == ButtonType.TempRadio)
-                    ib.setChecked(false);
+                if (b.type == ButtonType.StateToggle) ib.setChecked(s.getButtonState(i));
+                else if (b.type == ButtonType.TempRadio) ib.setChecked(false);
 
                 ib.setStyle(ibs);
                 ib.setUserObject(b.type);
-                for (Iterator<EventListener> iter = ib.getListeners().iterator(); iter.hasNext();) {
+                for (Iterator<EventListener> iter = ib.getListeners().iterator(); iter.hasNext(); ) {
                     if (iter.next() instanceof TextTooltip) {
                         iter.remove();
                         break;
@@ -2127,8 +2123,7 @@ public class GameUi implements Ui {
 
                 structureUIButtonCallbacks[i] = b.listener;
                 ib.setVisible(true);
-            } else
-                ib.setVisible(false);
+            } else ib.setVisible(false);
         }
 
         s.onClick(structureUIContent);
@@ -2165,8 +2160,7 @@ public class GameUi implements Ui {
     }
 
     public void showScienceUI() {
-        if (scienceScrollPane.isVisible())
-            return;
+        if (scienceScrollPane.isVisible()) return;
         scienceMenu.clear();
 
         for (ScienceType s : ScienceType.values) {
@@ -2188,11 +2182,9 @@ public class GameUi implements Ui {
     }
 
     public void hideScienceUI(boolean instantly) {
-        if (!scienceScrollPane.isVisible())
-            return;
+        if (!scienceScrollPane.isVisible()) return;
 
-        if (currentClickedStructure instanceof ScienceLab)
-            structureUIButtons[0].setChecked(false);
+        if (currentClickedStructure instanceof ScienceLab) structureUIButtons[0].setChecked(false);
 
         if (instantly) {
             scienceScrollPane.setVisible(false);
@@ -2205,8 +2197,7 @@ public class GameUi implements Ui {
     }
 
     public void updateStructureUIInventory() {
-        if (currentClickedStructure == null || !(currentClickedStructure instanceof ProducerStructure))
-            return;
+        if (currentClickedStructure == null || !(currentClickedStructure instanceof ProducerStructure)) return;
 
         structureUIInventory.clear();
         structureUIInventorySum.clear();
@@ -2220,15 +2211,13 @@ public class GameUi implements Ui {
             if (structure.getDocks()[i].type == DockType.ItemIn) {
                 for (Map.Entry<ItemType, Integer> e : ((CRecipeSlotStorage) inputs[j]).getAll()) {
                     Integer val = structureUIInventorySum.get(e.getKey());
-                    if (val == null)
-                        val = 0;
+                    if (val == null) val = 0;
                     structureUIInventorySum.put(e.getKey(), val + e.getValue());
                 }
                 j++;
             } else if (structure.getDocks()[i].type == DockType.FluidIn) {
                 CTank tank = (CTank) inputs[j];
-                if (!tank.isEmpty())
-                    structureUIInventorySum.put(tank.getFluid(), tank.get(tank.getFluid()));
+                if (!tank.isEmpty()) structureUIInventorySum.put(tank.getFluid(), tank.get(tank.getFluid()));
                 j++;
             }
         }
@@ -2265,13 +2254,12 @@ public class GameUi implements Ui {
 
         updateResources(false);
 
-        /*System.out.println(String.format("FPS: %d\nUpd-time: %.2fms\nDraw-time: %.2fms",
-                Gdx.graphics.getFramesPerSecond(),
-                Quarry.Q.getUpdateTime(),
-                Quarry.Q.getFrameTime()));*/
-        menu.fps.setText(String.format("FPS: %d\nUPS: %d",
-                Gdx.graphics.getFramesPerSecond(),
-                Math.round(1 / Math.max(1 / 60.0f, Quarry.Q.getUpdateTime() / 1000))));
+//        System.out.println(String.format("FPS: %d\nUpd-time: %.2fms\nDraw-time: %.2fms", Gdx.graphics.getFramesPerSecond(), Quarry.Q.getUpdateTime(), Quarry.Q.getFrameTime()));
+        menu.fps.setText(String.format("FPS: %d\nUPS: %d", Gdx.graphics.getFramesPerSecond(), Math.round(1 / Math.max(1 / 60.0f, Quarry.Q.getUpdateTime() / 1000))));
+        Gdx.app.log("BMC WxH", buildMainContainer.getWidth() + "x" + buildMainContainer.getHeight());
+        Gdx.app.log("BMC XY", buildMainContainer.getX() + "," + buildMainContainer.getY());
+        Gdx.app.log("UI-WxH", Const.UI_W + "x" + Const.UI_H);
+//        Gdx.app.log("LRSW",buildMainContainer.getChildren().get(0).getWidth()+","+buildMainContainer.getChildren().get(1).getWidth());
     }
 
     public void draw() {
@@ -2299,7 +2287,7 @@ public class GameUi implements Ui {
         layerSelection.onScienceChange();
     }
 
-    ///////////////////////////////
+    /// ////////////////////////////
 
     public static Cell<?> sep(Table t) {
         t.row();
@@ -2315,32 +2303,26 @@ public class GameUi implements Ui {
     }
 
     public static String formatResourceAmount(float amount, boolean fix) {
-        if (fix)
-            return decFormat.format(amount);
-        else
-            return intFormat.format(amount);
+        if (fix) return decFormat.format(amount);
+        else return intFormat.format(amount);
     }
 
     public static String formatPowerAmount(double rawAmount) {
         int amount = (int) Math.round(rawAmount);
 
         if (amount >= 1_000_000_000)
-            return formatResourceAmount(Math.round(amount / 1_000_000_00) / 10f) + " GJ";
-        if (amount >= 1_000_000)
-            return formatResourceAmount(Math.round(amount / 1_000_00) / 10f) + " MJ";
-        if (amount >= 1_000)
-            return formatResourceAmount(Math.round(amount / 1_00) / 10f) + " kJ";
+            return formatResourceAmount(Math.round((float) amount / 1_000_000_00) / 10f) + " GJ";
+        if (amount >= 1_000_000) return formatResourceAmount(Math.round((float) amount / 1_000_00) / 10f) + " MJ";
+        if (amount >= 1_000) return formatResourceAmount(Math.round((float) amount / 1_00) / 10f) + " kJ";
         return formatResourceAmount(amount) + " J";
     }
 
     private static HashMap<String, NinePatchDrawable> drawableCache = new HashMap<>();
 
-    public static NinePatchDrawable getDrawable(Skin skin, String name, int padTop, int padLeft, int padRight,
-            int padBot) {
+    public static NinePatchDrawable getDrawable(Skin skin, String name, int padTop, int padLeft, int padRight, int padBot) {
         String key = name + "-" + padTop + "-" + padLeft + "-" + padRight + "-" + padBot;
         NinePatchDrawable d = drawableCache.get(key);
-        if (d != null)
-            return d;
+        if (d != null) return d;
 
         d = (NinePatchDrawable) skin.newDrawable(name);
         d.setMinWidth(1);
@@ -2355,9 +2337,10 @@ public class GameUi implements Ui {
     }
 
     // TODO: resolve actual used items and not only the general recipe
-    // Also see ProductionStructure.updateUI()
+// Also see ProductionStructure.updateUI()
     public static Table renderRecipe(Skin skin, Recipe recipe,
-            /*Items activeInputs, Items activeOutputs, */boolean singleMode) {
+            /*Items activeInputs, Items activeOutputs, */
+                                     boolean singleMode) {
         Table table = new Table();
         table.setBackground(skin.getDrawable("panel_metal"));
         table.pad(20);
@@ -2366,12 +2349,10 @@ public class GameUi implements Ui {
             Table inputs = new Table();
             inputs.defaults().left();
             for (Amount e : recipe.getInput().entries) {
-                boolean fluid = e.getCat() == ItemCategory.Fluid
-                        || (e.getItem() != null && e.getItem().categories.contains(ItemCategory.Fluid));
+                boolean fluid = e.getCat() == ItemCategory.Fluid || (e.getItem() != null && e.getItem().categories.contains(ItemCategory.Fluid));
 
                 String text = formatResourceAmount(fluid ? e.getAmount() / 1000f : e.getAmount());
-                if (fluid)
-                    text += "L";
+                if (fluid) text += "L";
 
                 if (e instanceof ConstantSupplyAmount) {
                     text += "/s";
@@ -2381,8 +2362,7 @@ public class GameUi implements Ui {
 
                 if (a.getCat() != null)
                     inputs.add(createResourceTable(TOOLTIP_ICON_SIZE, skin, a.getCat(), text)).padRight(5);
-                else
-                    inputs.add(createResourceTable(TOOLTIP_ICON_SIZE, skin, a.getItem(), text)).padRight(5);
+                else inputs.add(createResourceTable(TOOLTIP_ICON_SIZE, skin, a.getItem(), text)).padRight(5);
             }
             table.add(inputs).expandX();
         }
@@ -2391,10 +2371,8 @@ public class GameUi implements Ui {
         Table t = new Table();
 
         if (recipe.getPower() > 0 && !(recipe instanceof GeneratorRecipe)) {
-            Cell<?> c = t.add(createResourceTable(25, skin, skin.getDrawable("icon_power"),
-                    formatPowerAmount(recipe.getPower() * 60) + "/s", "small-font"));
-            if (recipe.getInput() == null)
-                c.padRight(5);
+            Cell<?> c = t.add(createResourceTable(25, skin, skin.getDrawable("icon_power"), formatPowerAmount(recipe.getPower() * 60) + "/s", "small-font"));
+            if (recipe.getInput() == null) c.padRight(5);
         }
 
         if (recipe.getInput() != null) {
@@ -2404,8 +2382,7 @@ public class GameUi implements Ui {
             t.add(arrow).size(24, 15).pad(10);
         }
 
-        Table timeTable = createResourceTable(25, skin, skin.getDrawable("icon_time"),
-                formatResourceAmount(recipe.workingTime) + "s", "small-font");
+        Table timeTable = createResourceTable(25, skin, skin.getDrawable("icon_time"), formatResourceAmount(recipe.workingTime) + "s", "small-font");
         timeTable.getCells().get(1).getActor().setName("time");
         t.add(timeTable);
 
@@ -2417,31 +2394,26 @@ public class GameUi implements Ui {
             outputs.defaults().left();
 
             if (recipe instanceof GeneratorRecipe) {
-                outputs.add(createResourceTable(TOOLTIP_ICON_SIZE, skin, skin.getDrawable("icon_power"),
-                        formatPowerAmount(((GeneratorRecipe) recipe).getPowerGeneration()) + "/s")).padRight(5);
+                outputs.add(createResourceTable(TOOLTIP_ICON_SIZE, skin, skin.getDrawable("icon_power"), formatPowerAmount(((GeneratorRecipe) recipe).getPowerGeneration()) + "/s")).padRight(5);
             }
 
             if (recipe.getOutput() != null) {
                 for (Amount e : recipe.getOutput().entries) {
-                    boolean fluid = e.getCat() == ItemCategory.Fluid
-                            || (e.getItem() != null && e.getItem().categories.contains(ItemCategory.Fluid));
+                    boolean fluid = e.getCat() == ItemCategory.Fluid || (e.getItem() != null && e.getItem().categories.contains(ItemCategory.Fluid));
 
                     String text = formatResourceAmount(fluid ? e.getAmount() / 1000f : e.getAmount());
-                    if (fluid)
-                        text += "L";
+                    if (fluid) text += "L";
 
                     Amount a = e;
 
                     if (a.getCat() != null)
                         outputs.add(createResourceTable(TOOLTIP_ICON_SIZE, skin, a.getCat(), text)).padRight(5);
-                    else
-                        outputs.add(createResourceTable(TOOLTIP_ICON_SIZE, skin, a.getItem(), text)).padRight(5);
+                    else outputs.add(createResourceTable(TOOLTIP_ICON_SIZE, skin, a.getItem(), text)).padRight(5);
                 }
             }
 
             Cell<?> c = table.add(outputs).center();
-            if (recipe.getInput() == null)
-                c.expandX();
+            if (recipe.getInput() == null) c.expandX();
         }
 
         return table;
@@ -2464,11 +2436,9 @@ public class GameUi implements Ui {
         return createResourceTable(iconSize, skin, icon, text, "default-font", userObject);
     }
 
-    public static Table createResourceTable(int iconSize, Skin skin, Drawable icon, String text, String font,
-            Object... userObject) {
+    public static Table createResourceTable(int iconSize, Skin skin, Drawable icon, String text, String font, Object... userObject) {
         Table t = new Table();
-        if (userObject.length > 0)
-            t.setUserObject(userObject[0]);
+        if (userObject.length > 0) t.setUserObject(userObject[0]);
         Image i = new Image(icon);
         t.add(i).size(iconSize);
         Label l = new Label(text, skin, font, Color.WHITE);
@@ -2485,8 +2455,7 @@ public class GameUi implements Ui {
         return t;
     }
 
-    public static Table createResourceTable(int iconSize, Skin skin, ItemCategory cat, String text,
-            Object... userObject) {
+    public static Table createResourceTable(int iconSize, Skin skin, ItemCategory cat, String text, Object... userObject) {
         Table t = createResourceTable(iconSize, skin, cat.drawable, text, userObject);
         t.setTouchable(Touchable.enabled);
         t.addListener(new TextTooltip(text.trim() + " " + cat.title, skin));
