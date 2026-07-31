@@ -1558,7 +1558,7 @@ public class GameUi implements Ui {
             final Button btn = new Button(menuButtonStyle) {
                 @Override
                 public float getPrefWidth() {
-                    return isVisible() ? 200 : 0;
+                    return isVisible() ? buttonWidth : 0;
                 }
 
                 @Override
@@ -1566,11 +1566,11 @@ public class GameUi implements Ui {
                     return isVisible() ? buttonHeight : 0;
                 }
             };
-            btn.setSize(200, buttonHeight);
-            btn.add(content).size(200, buttonHeight);
+            btn.setSize(buttonWidth, buttonHeight);
+            btn.add(content).size(buttonWidth, buttonHeight);
             btn.setUserObject(info.index);
 
-            // 判断该分类是否有“新”建筑（即所需科技未全部拥有）
+            // 判断该分类是否有新建筑（所需科技未在 buildMenuSciences 中）
             boolean hasNew = false;
             for (Actor child : buildCategories[info.index].getChildren()) {
                 if (child instanceof Button) {
@@ -1762,7 +1762,7 @@ public class GameUi implements Ui {
 //            });
 //        }
 
-        buildMenuSciences.addAll(Game.G.sciences);
+//        buildMenuSciences.addAll(Game.G.sciences);
 //        buildTabs.invalidateHierarchy();
     }
 
@@ -2043,6 +2043,11 @@ public class GameUi implements Ui {
         rotateButton.addAction(sequence(visible(false), moveTo(rotateButton.getX(), tooltip.getY() + 200)));
         flipButton.addAction(sequence(visible(false), moveTo(flipButton.getX(), tooltip.getY() + 200)));
 
+        for (ButtonGroup<Button> group : buildCategoryButtons) {
+            if (group != null) group.uncheckAll();
+        }
+        buildTabButtons.uncheckAll();
+
         stage.unfocusAll();
     }
 
@@ -2256,10 +2261,6 @@ public class GameUi implements Ui {
 
 //        System.out.println(String.format("FPS: %d\nUpd-time: %.2fms\nDraw-time: %.2fms", Gdx.graphics.getFramesPerSecond(), Quarry.Q.getUpdateTime(), Quarry.Q.getFrameTime()));
         menu.fps.setText(String.format("FPS: %d\nUPS: %d", Gdx.graphics.getFramesPerSecond(), Math.round(1 / Math.max(1 / 60.0f, Quarry.Q.getUpdateTime() / 1000))));
-        Gdx.app.log("BMC WxH", buildMainContainer.getWidth() + "x" + buildMainContainer.getHeight());
-        Gdx.app.log("BMC XY", buildMainContainer.getX() + "," + buildMainContainer.getY());
-        Gdx.app.log("UI-WxH", Const.UI_W + "x" + Const.UI_H);
-//        Gdx.app.log("LRSW",buildMainContainer.getChildren().get(0).getWidth()+","+buildMainContainer.getChildren().get(1).getWidth());
     }
 
     public void draw() {
