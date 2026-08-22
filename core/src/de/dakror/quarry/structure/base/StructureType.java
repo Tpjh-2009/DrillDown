@@ -95,7 +95,6 @@ public enum StructureType {
 
     // producers
     Mine(40, Mine.class),
-    OreMine(211, OreMine.class),
     Lumberjack(41, Lumberjack.class),
     GroundwaterPump(42, GroundwaterPump.class),
     ShaftDrill(43, ShaftDrill.class),
@@ -172,7 +171,8 @@ public enum StructureType {
     // Processors cnt.
     Stacker(210, Stacker.class),
 
-    ;
+    OreMine(211, OreMine.class),
+    TrashCan(212, TrashCan.class);
 
     public static final StructureType[] values = values();
 

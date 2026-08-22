@@ -649,7 +649,7 @@ public class GameUi implements Ui {
         buildTabs.top().left().grow();
 
         float totalTabHeight = Const.UI_H - 575 - Quarry.Q.safeInsets[1] - Quarry.Q.safeInsets[3];
-        tabHeight = (totalTabHeight - 20) / 5f;
+        tabHeight = (totalTabHeight - 20) / 6f;
         buttonWidth = 200;
         buttonHeight = tabHeight - 6;
 
@@ -777,6 +777,7 @@ public class GameUi implements Ui {
         buildMenuItem(powe, new GasTurbine(-1, 0));
 
         buildMenuItem(mods, new OreMine(-1, 0));
+        buildMenuItem(mods, new TrashCan(-1, 0));
 
         buildItemScrollPane = new ScrollPane(null, skin, "container");
         buildItemScrollPane.setScrollingDisabled(true, false);
@@ -785,6 +786,19 @@ public class GameUi implements Ui {
         ScrollPane categoryScroll = new ScrollPane(buildTabs, skin, "container");
         categoryScroll.setScrollingDisabled(true, false);
         categoryScroll.setSize(200, totalTabHeight + 60);
+        categoryScroll.addListener(new InputListener() {
+            @Override
+            public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
+                super.enter(event, x, y, pointer, fromActor);
+                stage.setScrollFocus(categoryScroll);
+            }
+
+            @Override
+            public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
+                super.exit(event, x, y, pointer, toActor);
+                stage.setScrollFocus(null);
+            }
+        });
 
         buildMainContainer = new Table();
         buildMainContainer.add(categoryScroll).width(200).expandY().fillY();
